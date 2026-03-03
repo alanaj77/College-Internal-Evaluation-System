@@ -97,8 +97,12 @@
         <div class="login-header">
             <h2>Faculty Portal</h2>
             <p>Enter your credentials to manage marks</p>
-        </div>
 
+        {% if error %}
+        <p style="color:red;">{{ error }}</p>
+        {% endif %}
+        </div>
+        
     
         <form action="/login" method="POST">
             <div class="form-group">

@@ -8,15 +8,19 @@
 <body>
 
     <!-- Navbar (COMMON FOR ALL PAGES) -->
+   
     <div class="navbar">
+        
+          {% block nav_title %}
         <div class="logo">MyApp</div>
-
+     {% endblock %}
+     
         <div class="nav-right">
-            {% if session.get('user_logged_in') %}
-                <a href="/logout">Logout</a>
-            {% else %}
-                <a href="/login">Login</a>
-            {% endif %}
+        {% if session.get('user_id') %}
+            <a href="/logout">Logout</a>
+        {% else %}
+            <a href="/login">Login</a>
+        {% endif %}
         </div>
     </div>
 

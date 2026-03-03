@@ -1,0 +1,34 @@
+from flask import Blueprint, render_template,session,url_for,redirect
+from .models import get_connection   # import DB function
+views = Blueprint('views',__name__)
+
+
+
+@views.route("/dashboard")
+def dashboard():
+    if "user_id" not in session:
+        return redirect(url_for("auth.login"))
+    user_id=session["user_id"] 
+    sql = """
+    SELECT 
+        p.name, 
+        s.subject_name AS Teaching, 
+        a.branch_id AS `To Branch`
+    FROM t_assignment a
+    JOIN professor p ON a.p_id = p.p_id
+    JOIN subject s ON a.subject_code = s.subject_code where p.p_id=%s;
+    """
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute(sql,(user_id,))
+    user = cursor.fetchall()
+    print(user)
+    
+    cursor.close()
+    conn.close()
+
+    return render_template("dashboard.html",name = user[0]['name'],user_id=session["user_id"],user = user)
+
+@views.route('/new')
+def new():
+    return render_template("new.html")

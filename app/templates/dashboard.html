@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Professor Dashboard{% endblock %}
+
+{% block nav_title %}
+<div class="logo">
+    <span class="logo-icon">🎓</span>
+    <span>Welcome, Prof. {{ name }}</span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper">
+
+    <div class="dashboard-header">
+        <div class="header-text">
+            <h1>Your Subjects</h1>
+            <p class="subtitle">{{ user|length }} subject{{ 's' if user|length != 1 else '' }} assigned this semester</p>
+        </div>
+        <div class="header-badge">
+            <span>{{ user|length }}</span>
+            <small>Total</small>
+        </div>
+    </div>
+
+    <div class="subjects-grid">
+        {% for subject in user %}
+        <div class="subject-card" style="--card-index: {{ loop.index }}">
+            <div class="card-accent"></div>
+            <div class="card-body">
+                {% set values = subject.values() | list %}
+                {% if values|length > 0 %}
+                    <div class="subject-name">{{ values[0] }}</div>
+                {% endif %}
+                {% if values|length > 1 %}
+                    <div class="subject-meta">
+                        {% for val in values[1:] %}
+                            <span class="meta-tag">{{ val }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="card-footer">
+                <span class="card-number">{{ loop.index }}</span>
+                <div class="card-actions">
+                    <button class="action-btn">View</button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}
