@@ -23,7 +23,7 @@ def dashboard():
     cursor = conn.cursor(dictionary=True)
     cursor.execute(sql,(user_id,))
     user = cursor.fetchall()
-    print(user)
+    
     
     cursor.close()
     conn.close()
