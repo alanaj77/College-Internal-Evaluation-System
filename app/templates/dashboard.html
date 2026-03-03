@@ -29,12 +29,15 @@
             <div class="card-body">
                 {% set values = subject.values() | list %}
                 {% if values|length > 0 %}
-                    <div class="subject-name">{{ values[0] }}</div>
+                    
                 {% endif %}
                 {% if values|length > 1 %}
                     <div class="subject-meta">
-                        {% for val in values[1:] %}
+                        {% for val in values[1:2] %}
                             <span class="meta-tag">{{ val }}</span>
+                        {% endfor %}
+                         {% for val in values[2:] %}
+                            <span class="meta-tag">S{{ val }}</span>
                         {% endfor %}
                     </div>
                 {% endif %}

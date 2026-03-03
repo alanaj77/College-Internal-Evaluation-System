@@ -13,7 +13,8 @@ def dashboard():
     SELECT 
         p.name, 
         s.subject_name AS Teaching, 
-        a.branch_id AS `To Branch`
+        a.branch_id AS `To Branch`,
+        a.sem_number 
     FROM t_assignment a
     JOIN professor p ON a.p_id = p.p_id
     JOIN subject s ON a.subject_code = s.subject_code where p.p_id=%s;
