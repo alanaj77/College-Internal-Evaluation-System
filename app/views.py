@@ -30,6 +30,8 @@ def dashboard():
 
     return render_template("dashboard.html",name = user[0]['name'],user_id=session["user_id"],user = user)
 
-@views.route('/new')
-def new():
-    return render_template("new.html")
+@views.route('/marks_entry')
+def marks_entry():
+    if "user_id" not in session:
+        return redirect(url_for("auth.login"))
+    return render_template('marks_entry.html')

@@ -13,5 +13,6 @@ def get_connection():
         password="AVNS_-omvYPudqpObIUs4hqd",
         database="collegedb",
         
+     
         use_pure=True  # <--- CRITICAL: This fixes the Windows SSL error
     )

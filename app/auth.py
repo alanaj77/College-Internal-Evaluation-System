@@ -21,7 +21,7 @@ def login():
         )
 
         user = cursor.fetchone()
-        
+        print(user)
         cursor.close()
         conn.close()
 

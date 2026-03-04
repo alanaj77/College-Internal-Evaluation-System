@@ -24,7 +24,7 @@
 
     <div class="subjects-grid">
         {% for subject in user %}
-        <div class="subject-card" style="--card-index: {{ loop.index }}">
+        <div class="subject-card" style="--card-index: {{ loop.index }}" onclick="window.location.href='/marks_entry'">
             <div class="card-accent"></div>
             <div class="card-body">
                 {% set values = subject.values() | list %}
@@ -42,9 +42,9 @@
                     </div>
                 {% endif %}
             </div>
-            <div class="card-footer">
+            <div class="card-footer" >
                 <span class="card-number">{{ loop.index }}</span>
-                <div class="card-actions">
+                <div class="card-actions" >
                     <button class="action-btn">View</button>
                 </div>
             </div>
