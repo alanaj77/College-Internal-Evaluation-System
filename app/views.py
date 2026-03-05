@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template,session,url_for,redirect
 from .models import get_connection   # import DB function
 views = Blueprint('views',__name__)
-
+from mysql.connector import Error
 
 
 @views.route("/dashboard")
@@ -20,18 +20,28 @@ def dashboard():
     JOIN subject s ON a.subject_code = s.subject_code where p.p_id=%s;
     """
     conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute(sql,(user_id,))
-    user = cursor.fetchall()
-    
-    
-    cursor.close()
-    conn.close()
+    if conn is None:
+         return "Database Connection Failed. Please try again later.",500
+    try:
+        
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute(sql,(user_id,))
+        user = cursor.fetchall()
+        return render_template("dashboard.html",name = user[0]['name'],user_id=session["user_id"],user = user)
+    except Error as e:
+        print(f"Query Error: {e}")
+        return "Error fetching data",500
+    finally:
+        if conn.is_connected():
+            cursor.close()
+            conn.close()
 
-    return render_template("dashboard.html",name = user[0]['name'],user_id=session["user_id"],user = user)
+    
+  
+
+    
 
 @views.route('/marks_entry')
 def marks_entry():
-    if "user_id" not in session:
-        return redirect(url_for("auth.login"))
+    
     return render_template('marks_entry.html')
