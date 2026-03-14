@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connection Issue | Mark Analysis System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body style="display: flex; align-items: center; justify-content: center; height: 100vh; background-color: #f3f4f6;">
+    <div class="card" style="text-align: center; max-width: 500px;">
+        <h1 style="font-size: 50px;">🔌</h1>
+        <h2 style="color: #1f2937; margin-bottom: 10px;">Database Connection Failed</h2>
+        <p style="color: #6b7280; margin-bottom: 25px;">
+            We're having trouble reaching our servers right now. This is usually due to a temporary network issue or server maintenance.
+        </p>
+        <button onclick="location.reload()" class="action-btn" style="width: 100%; padding: 12px;">Try Again</button>
+        <a href="/" style="display: block; margin-top: 15px; font-size: 14px; color: var(--accent);">Back to Home</a>
+    </div>
+</body>
+</html>

@@ -24,21 +24,23 @@
 
     <div class="subjects-grid">
         {% for subject in user %}
-        <div class="subject-card" style="--card-index: {{ loop.index }}" onclick="window.location.href='/marks_entry'">
+        
+      <div class="subject-card" 
+     style="--card-index: {{ loop.index }}" 
+     onclick="window.location.href='/marks_entry?pid={{ subject.p_id }}&tid={{ subject.t_id }}&semno={{ subject.sem_number }}&sub_code={{ subject.subject_code }}'">
             <div class="card-accent"></div>
             <div class="card-body">
-                {% set values = subject.values() | list %}
-                {% if values|length > 0 %}
+               
+                {% if subject|length > 0 %}
                     
                 {% endif %}
-                {% if values|length > 1 %}
+                {% if subject|length > 1 %}
                     <div class="subject-meta">
-                        {% for val in values[1:3] %}
-                            <span class="meta-tag">{{ val }}</span>
-                        {% endfor %}
-                         {% for val in values[3:] %}
-                            <span class="meta-tag">S{{ val }}</span>
-                        {% endfor %}
+                        
+                            <span class="meta-tag">{{ subject['Teaching'] }}</span>
+                            <span class="meta-tag">{{ subject['To Branch']  }}</span>
+                            <span class="meta-tag">{{ subject['sem_number']  }}</span>
+                        
                     </div>
                 {% endif %}
             </div>
