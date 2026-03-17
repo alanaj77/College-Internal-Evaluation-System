@@ -3,6 +3,8 @@ from .models import get_connection   # import DB function
 views = Blueprint('views',__name__)
 from mysql.connector import Error
 import pandas as pd
+import matplotlib
+matplotlib.use('Agg') 
 import matplotlib.pyplot as plt
 import io
 import base64
