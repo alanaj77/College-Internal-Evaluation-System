@@ -1,15 +1,63 @@
 {% extends "base.html" %}
 
+{% block title %}Performance Analytics{% endblock %}
+
 {% block content %}
-<div class="container mt-5 text-center">
-    <h2 style="color: #FF00FF;">Class Performance Analytics</h2>
-    <p style="color: #00FFFF;">Visualizing the correlation between attendance and final scores.</p>
+<div class="dashboard-wrapper">
     
-    <div class="chart-container" style="margin-top: 30px; box-shadow: 0px 0px 20px rgba(138, 43, 226, 0.4); border-radius: 10px; display: inline-block; padding: 15px; background-color: #121212;">
-        <img src="data:image/png;base64, {{ plot_url }}" alt="Performance Graph" style="max-width: 100%; height: auto; border-radius: 8px;">
+    <div class="marks-header" style="margin-bottom: 30px;">
+        <div class="header-text">
+            <h1>Class Analytics</h1>
+            <p class="marks-subtitle">Subject Code: <strong>{{ sub_code }}</strong> | Total Internal Marks: 40</p>
+        </div>
+        <a href="{{ url_for('views.dashboard') }}" class="action-btn" style="text-decoration: none; padding: 10px 20px;">
+            ← Back to Dashboard
+        </a>
     </div>
-    
-    <br>
-    <a href="{{ url_for('views.dashboard') }}" class="btn mt-4" style="background-color: #8A2BE2; color: white;">Back to Dashboard</a>
+
+    <div style="display: flex; gap: 12px; margin-bottom: 35px; flex-wrap: wrap; justify-content: center;">
+        
+        <a href="{{ url_for('views.performance_graphs', pid=pid, tid=tid, semno=semno, sub_code=sub_code, graph_type='categorization') }}" 
+           class="action-btn" 
+           style="text-decoration: none; {% if current_graph == 'categorization' %} background: var(--accent-hover); box-shadow: 0 4px 12px rgba(59,91,219,0.4); {% else %} background: var(--bg-card); color: var(--accent); border: 1px solid var(--accent); {% endif %}">
+           📊 Categorization
+        </a>
+
+        <a href="{{ url_for('views.performance_graphs', pid=pid, tid=tid, semno=semno, sub_code=sub_code, graph_type='distribution') }}" 
+           class="action-btn" 
+           style="text-decoration: none; {% if current_graph == 'distribution' %} background: var(--accent-hover); box-shadow: 0 4px 12px rgba(59,91,219,0.4); {% else %} background: var(--bg-card); color: var(--accent); border: 1px solid var(--accent); {% endif %}">
+           📈 Marks Distribution
+        </a>
+        
+        <a href="{{ url_for('views.performance_graphs', pid=pid, tid=tid, semno=semno, sub_code=sub_code, graph_type='top_performers') }}" 
+           class="action-btn" 
+           style="text-decoration: none; {% if current_graph == 'top_performers' %} background: var(--accent-hover); box-shadow: 0 4px 12px rgba(59,91,219,0.4); {% else %} background: var(--bg-card); color: var(--accent); border: 1px solid var(--accent); {% endif %}">
+           🏆 Top 5 Performers
+        </a>
+
+        <a href="{{ url_for('views.performance_graphs', pid=pid, tid=tid, semno=semno, sub_code=sub_code, graph_type='weak_students') }}" 
+           class="action-btn" 
+           style="text-decoration: none; {% if current_graph == 'weak_students' %} background: var(--accent-hover); box-shadow: 0 4px 12px rgba(59,91,219,0.4); {% else %} background: var(--bg-card); color: var(--accent); border: 1px solid var(--accent); {% endif %}">
+           ⚠️ Weak Students
+        </a>
+
+        <a href="{{ url_for('views.performance_graphs', pid=pid, tid=tid, semno=semno, sub_code=sub_code, graph_type='series_compare') }}" 
+           class="action-btn" 
+           style="text-decoration: none; {% if current_graph == 'series_compare' %} background: var(--accent-hover); box-shadow: 0 4px 12px rgba(59,91,219,0.4); {% else %} background: var(--bg-card); color: var(--accent); border: 1px solid var(--accent); {% endif %}">
+           📉 Series Trends
+        </a>
+        
+        <a href="{{ url_for('views.performance_graphs', pid=pid, tid=tid, semno=semno, sub_code=sub_code, graph_type='pass_fail') }}" 
+           class="action-btn" 
+           style="text-decoration: none; {% if current_graph == 'pass_fail' %} background: var(--accent-hover); box-shadow: 0 4px 12px rgba(59,91,219,0.4); {% else %} background: var(--bg-card); color: var(--accent); border: 1px solid var(--accent); {% endif %}">
+           🍩 Pass/Fail Ratio
+        </a>
+
+    </div>
+
+    <div class="table-container" style="padding: 40px; text-align: center; background: var(--bg-card);">
+        <img src="data:image/png;base64, {{ plot_url }}" alt="Analytics Graph" style="max-width: 100%; height: auto; border-radius: 8px;">
+    </div>
+
 </div>
 {% endblock %}
