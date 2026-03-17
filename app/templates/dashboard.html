@@ -46,9 +46,16 @@
             </div>
             <div class="card-footer" >
                 <span class="card-number">{{ loop.index }}</span>
-                <div class="card-actions" >
+                
+                <div class="card-actions" style="display: flex; gap: 10px; align-items: center;">
                     <button class="action-btn">View</button>
+                    
+                    <a href="{{ url_for('views.performance_graphs', pid=subject.p_id, tid=subject.t_id, semno=subject.sem_number, sub_code=subject.subject_code) }}" 
+                       class="btn-analytics"
+                       onclick="event.stopPropagation();"> Analytics
+                    </a>
                 </div>
+                
             </div>
         </div>
         {% endfor %}
