@@ -2,6 +2,10 @@ from flask import Blueprint, render_template,session,url_for,redirect,request
 from .models import get_connection   # import DB function
 views = Blueprint('views',__name__)
 from mysql.connector import Error
+import pandas as pd
+import matplotlib.pyplot as plt
+import io
+import base64
 
 
 @views.route("/dashboard")
