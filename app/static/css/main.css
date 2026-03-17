@@ -1179,3 +1179,131 @@ body.dark-mode .header-text .subtitle {
 body.dark-mode .dashboard-header {
     border-bottom-color: rgba(255,255,255,0.07) !important;
 }
+
+/* ── ROLE SELECTOR BUTTONS ── */
+.role-btn {
+    flex: 1;
+    padding: 10px;
+    background: var(--bg-card);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+}
+
+/* Remove hover color change — no color shift on hover */
+.role-btn:hover {
+    border-color: var(--border);
+    background: var(--bg-card);
+    color: var(--text-secondary);
+}
+
+/* Active state — solid filled look */
+.role-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(59, 91, 219, 0.3);
+}
+/* ── MARK INPUT ── */
+.mark-input {
+    width: 100%;
+    padding: 8px 10px;
+    background: var(--bg-input);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    text-align: center;
+    transition: border-color 0.2s ease, background 0.2s ease;
+    -moz-appearance: textfield;
+}
+
+.mark-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: var(--bg-card);
+}
+
+/* Remove number input arrows */
+.mark-input::-webkit-outer-spin-button,
+.mark-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+/* ── TOTAL BADGE ── */
+.total-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 20px;
+    background: var(--accent-light);
+    border: 1px solid var(--accent-border);
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 13px;
+    min-width: 40px;
+    text-align: center;
+}
+
+/* ── UPDATE BUTTON ── */
+.update-btn {
+    background: var(--accent);
+    border: none;
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 8px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s ease;
+}
+
+.update-btn:hover {
+    background: var(--accent-hover);
+}
+
+/* ── FIX: marks table layout ── */
+.marks-wrapper {
+    max-width: 100%;
+    padding: 44px 24px 60px;
+}
+
+.table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.marks-table {
+    min-width: 900px;   /* forces table to be wide enough internally */
+    table-layout: fixed;
+}
+
+/* Column widths — controls how space is distributed */
+.marks-table th:nth-child(1) { width: 100px; }   /* Roll No */
+.marks-table th:nth-child(2) { width: 140px; }   /* Name */
+.marks-table th:nth-child(3) { width: 140px; }   /* Assignment */
+.marks-table th:nth-child(4) { width: 140px; }   /* Attendance */
+.marks-table th:nth-child(5) { width: 130px; }   /* Series 1 */
+.marks-table th:nth-child(6) { width: 130px; }   /* Series 2 */
+.marks-table th:nth-child(7) { width: 80px;  }   /* Total */
+.marks-table th:nth-child(8) { width: 100px; }   /* Action */
+
+/* Prevent name from wrapping awkwardly */
+.marks-table tbody td:nth-child(2) {
+    word-break: break-word;
+}
+
+/* Make inputs fill their column properly */
+.mark-input {
+    width: 100%;
+    max-width: 110px;
+}

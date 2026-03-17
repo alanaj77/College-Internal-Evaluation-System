@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% block title %}Marks Entry{% endblock %}
+{% block title %}Mark Entry{% endblock %}
 
 {% block content %}
 <div class="marks-wrapper">
 
     <div class="marks-header">
         <div>
-            <!-- <h1>Marks Entry</h1> -->
+            <h1>{{ subject_name }} ({{ sub_code }}) — Mark Entry</h1>
             <p class="marks-subtitle">{{ students|length }} student{{ 's' if students|length != 1 else '' }} enrolled</p>
         </div>
         <div class="marks-badge">
@@ -19,12 +19,14 @@
         <table class="marks-table">
             <thead>
                 <tr>
-                    <th>Adm No</th>
+                    <th>Roll No</th>
                     <th>Name</th>
-                    <th>Attendance</th>
-                    <th>Series 1</th>
-                    <th>Series 2</th>
-                    <th>Total Mark</th>
+                    <th>Assignment (Out of 10)</th>
+                    <th>Attendance (Out of 10)</th>
+                    <th>Series 1 (Out of 15)</th>
+                    <th>Series 2 (Out of 15)</th>
+                    <th>Total</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
