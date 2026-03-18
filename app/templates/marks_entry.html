@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% block title %}Marks Entry{% endblock %}
+{% block title %}Mark Entry{% endblock %}
 
 {% block content %}
 <div class="marks-wrapper">
 
     <div class="marks-header">
         <div>
-            <!-- <h1>Marks Entry</h1> -->
+            <h1>{{ subject_name }} ({{ sub_code }}) — Mark Entry</h1>
             <p class="marks-subtitle">{{ students|length }} student{{ 's' if students|length != 1 else '' }} enrolled</p>
         </div>
         <div class="marks-badge">
@@ -19,12 +19,14 @@
         <table class="marks-table">
             <thead>
                 <tr>
-                    <th>Adm No</th>
+                    <th>Roll No</th>
                     <th>Name</th>
-                    <th>Attendance</th>
-                    <th>Series 1</th>
-                    <th>Series 2</th>
-                    <th>Total Mark</th>
+                    <th>Assignment (Out of 10)</th>
+                    <th>Attendance (Out of 10)</th>
+                    <th>Series 1 (Out of 15)</th>
+                    <th>Series 2 (Out of 15)</th>
+                    <th>Total</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -32,15 +34,83 @@
                 <tr>
                     <td>{{ student['adm_no'] }}</td>
                     <td>{{ student['name'] }}</td>
-                    <td>{{ student['attendance_marks'] }}</td>
-                    <td>{{ student['series_one'] }}</td>
-                    <td>{{ student['series_two'] }}</td>
-                    <td>{{ student['total_mark'] }}</td>
+
+                    <td>
+                        <input class="mark-input" type="number" min="0" max="10"
+                               id="assignment-{{ student['adm_no'] }}"
+                               value="{{ student['assignment_marks'] or '' }}"
+                               oninput="calcTotal('{{student.adm_no}}')">
+                    </td>
+                    <td>
+                        <input class="mark-input" type="number" min="0" max="10"
+                               id="attendance-{{ student['adm_no'] }}"
+                               value="{{ student['attendance_marks'] or '' }}"
+                               oninput="calcTotal('{{ student.adm_no}}')">
+                    </td>
+                    <td>
+                        <input class="mark-input" type="number" min="0" max="15"
+                               id="series1-{{ student['adm_no'] }}"
+                               value="{{ student['series_one'] or '' }}"
+                               oninput="calcTotal('{{ student.adm_no }}')">
+                    </td>
+                    <td>
+                        <input class="mark-input" type="number" min="0" max="15"
+                               id="series2-{{ student['adm_no'] }}"
+                               value="{{ student['series_two'] or '' }}"
+                               oninput="calcTotal('{{ student.adm_no }}')">
+                    </td>
+
+                    <!-- Total — shown live, calculated by JS (trigger saves it in DB) -->
+                    <td>
+                        <span class="total-badge" id="total-{{ student['adm_no'] }}">
+                            {{ student['total_mark'] or '-' }}
+                        </span>
+                    </td>
+
+                    <!-- Update button — each row has its own form -->
+                    <td>
+                        <form method="POST" action="/update_marks">
+                            <input type="hidden" name="adm_no"      value="{{ student['adm_no'] }}">
+                            <input type="hidden" name="sub_code"     value="{{ sub_code }}">
+                            <input type="hidden" name="redirect_url" value="{{ request.url }}">
+
+                            <input type="hidden" name="assignment_marks"  id="h-assignment-{{ student['adm_no'] }}"  value="{{ student['assignment_marks'] or '' }}">
+                            <input type="hidden" name="attendance_marks"  id="h-attendance-{{ student['adm_no'] }}"  value="{{ student['attendance_marks'] or '' }}">
+                            <input type="hidden" name="series_one"        id="h-series1-{{ student['adm_no'] }}"     value="{{ student['series_one'] or '' }}">
+                            <input type="hidden" name="series_two"        id="h-series2-{{ student['adm_no'] }}"     value="{{ student['series_two'] or '' }}">
+
+                            <button type="submit" class="update-btn"
+                                    onclick="syncHidden('{{ student.adm_no }}')">
+                                Update
+                            </button>
+                        </form>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-
 </div>
+
+<script>
+// Live total calculation in the browser
+function calcTotal(adm_no) {
+    const a  = parseFloat(document.getElementById('assignment-' + adm_no).value) || 0;
+    const at = parseFloat(document.getElementById('attendance-' + adm_no).value) || 0;
+    const s1 = parseFloat(document.getElementById('series1-'    + adm_no).value) || 0;
+    const s2 = parseFloat(document.getElementById('series2-'    + adm_no).value) || 0;
+
+    const total = a + at + s1 + s2;
+    const badge = document.getElementById('total-' + adm_no);
+    badge.textContent = total > 0 ? total : '-';
+}
+
+// Copy visible input values into hidden fields before form submits
+function syncHidden(adm_no) {
+    document.getElementById('h-assignment-' + adm_no).value = document.getElementById('assignment-' + adm_no).value;
+    document.getElementById('h-attendance-' + adm_no).value = document.getElementById('attendance-' + adm_no).value;
+    document.getElementById('h-series1-'    + adm_no).value = document.getElementById('series1-'    + adm_no).value;
+    document.getElementById('h-series2-'    + adm_no).value = document.getElementById('series2-'    + adm_no).value;
+}
+</script>
 {% endblock %}

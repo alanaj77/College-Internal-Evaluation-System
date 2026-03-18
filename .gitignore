@@ -1,0 +1,25 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments (Ignore your local dependencies)
+venv/
+env/
+.venv/
+
+# Environment Variables & Secrets (CRITICAL FOR SECURITY)
+.env
+flask_session/
+
+# IDE specific folders (Keeps your repo clean for others)
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Any locally saved temporary images/graphs (if you save them to disk later)
+*.png
+*.jpg

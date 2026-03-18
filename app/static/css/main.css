@@ -577,569 +577,10 @@ body.dark-mode {
     .marks-table thead th,
     .marks-table tbody td { padding: 11px 13px; font-size: 13px; }
 }
-    --bg-page:        #eef0f4;
-    --bg-navbar:      #ffffff;
-    --bg-card:        #ffffff;
-    --bg-card-footer: #fafbfc;
-    --bg-input:       #eef2ff;
-    --border:         #e2e5ec;
-    --border-header:  #d8dce8;
-    --border-footer:  #f0f1f5;
-    --text-primary:   #1a1f36;
-    --text-secondary: #6b7280;
-    --text-muted:     #b0b8cc;
-    --text-label:     #374151;
-    --accent:         #3b5bdb;
-    --accent-hover:   #2f4ac4;
-    --accent-light:   #eef2ff;
-    --accent-border:  #c5d0fa;
-    --shadow-nav:     0 1px 8px rgba(0,0,0,0.06);
-    --shadow-card:    0 2px 8px rgba(0,0,0,0.05);
-    --shadow-badge:   0 4px 14px rgba(59,91,219,0.3);
-    --toggle-bg:      #f4f5f8;
-    --toggle-border:  #d8dce8;
-
-    background-color: var(--bg-page);
-    color: var(--text-primary);
-    min-height: 100vh;
-    font-family: 'DM Sans', sans-serif;
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
 
 /* ================================================
-   CSS VARIABLES — DARK MODE
-   JS adds/removes .dark-mode on <body>
+   DARK MODE FORCE FIX
 ================================================ */
-body.dark-mode {
-    --bg-page:        #0f1117;
-    --bg-navbar:      #131929;
-    --bg-card:        #1a2035;
-    --bg-card-footer: #161c2e;
-    --bg-input:       rgba(255,255,255,0.04);
-    --border:         rgba(255,255,255,0.07);
-    --border-header:  rgba(255,255,255,0.07);
-    --border-footer:  rgba(255,255,255,0.05);
-    --text-primary:   #e8edf8;
-    --text-secondary: #6b7a99;
-    --text-muted:     #3a4a6a;
-    --text-label:     #a0aec0;
-    --accent:         #63b3ed;
-    --accent-hover:   #4299e1;
-    --accent-light:   rgba(99,179,237,0.08);
-    --accent-border:  rgba(99,179,237,0.2);
-    --shadow-nav:     0 2px 20px rgba(0,0,0,0.4);
-    --shadow-card:    0 2px 12px rgba(0,0,0,0.3);
-    --shadow-badge:   0 4px 14px rgba(99,179,237,0.15);
-    --toggle-bg:      #1a2035;
-    --toggle-border:  rgba(255,255,255,0.1);
-}
-
-/* ──────────────────────────────────────────
-   NAVBAR
-────────────────────────────────────────── */
-.navbar {
-    background: var(--bg-navbar);
-    padding: 0 40px;
-    height: 64px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--border);
-    box-shadow: var(--shadow-nav);
-    transition: background 0.3s ease, border-color 0.3s ease;
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: var(--text-primary);
-    font-family: 'Playfair Display', serif;
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: 0.2px;
-    transition: color 0.3s ease;
-}
-
-.logo-icon {
-    font-size: 22px;
-}
-
-.nav-right {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-}
-
-.nav-right a {
-    color: var(--accent);
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 600;
-    padding: 8px 20px;
-    border: 1.5px solid var(--accent);
-    border-radius: 8px;
-    transition: all 0.2s ease;
-    letter-spacing: 0.3px;
-}
-
-.nav-right a:hover {
-    background: var(--accent);
-    color: #fff;
-}
-
-/* ── THEME TOGGLE BUTTON ── */
-.theme-toggle {
-    background: var(--toggle-bg);
-    border: 1.5px solid var(--toggle-border);
-    border-radius: 8px;
-    width: 38px;
-    height: 38px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 16px;
-    transition: all 0.2s ease;
-    flex-shrink: 0;
-}
-
-.theme-toggle:hover {
-    border-color: var(--accent);
-    transform: scale(1.08);
-}
-
-/* ──────────────────────────────────────────
-   PAGE CONTAINER
-────────────────────────────────────────── */
-.page-container {
-    min-height: calc(100vh - 64px);
-    padding: 0;
-}
-
-/* ──────────────────────────────────────────
-   DASHBOARD WRAPPER
-────────────────────────────────────────── */
-.dashboard-wrapper {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 48px 40px 60px;
-}
-
-/* ──────────────────────────────────────────
-   DASHBOARD HEADER
-────────────────────────────────────────── */
-.dashboard-header {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    margin-bottom: 40px;
-    padding-bottom: 24px;
-    border-bottom: 1px solid #d8dce8;
-}
-
-.header-text h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 36px;
-    font-weight: 700;
-    color: #1a1f36;
-    letter-spacing: -0.5px;
-    line-height: 1.1;
-}
-
-.header-text .subtitle {
-    margin-top: 6px;
-    font-size: 14px;
-    color: #6b7280;
-    font-weight: 400;
-    letter-spacing: 0.3px;
-}
-
-.header-badge {
-    background: #3b5bdb;
-    border-radius: 12px;
-    padding: 12px 22px;
-    text-align: center;
-    min-width: 70px;
-    box-shadow: 0 4px 14px rgba(59, 91, 219, 0.3);
-}
-
-.header-badge span {
-    display: block;
-    font-size: 28px;
-    font-weight: 700;
-    color: #ffffff;
-    font-family: 'Playfair Display', serif;
-    line-height: 1;
-}
-
-.header-badge small {
-    display: block;
-    font-size: 11px;
-    color: rgba(255,255,255,0.75);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-top: 4px;
-}
-
-/* ──────────────────────────────────────────
-   SUBJECTS GRID
-────────────────────────────────────────── */
-.subjects-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 24px;
-}
-
-/* ──────────────────────────────────────────
-   SUBJECT CARD
-────────────────────────────────────────── */
-.subject-card {
-    background: #ffffff;
-    border: 1px solid #e2e5ec;
-    border-radius: 14px;
-    width: 260px;
-    overflow: hidden;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-    animation: cardReveal 0.4s ease both;
-    animation-delay: calc(var(--card-index) * 0.07s);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-@keyframes cardReveal {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.subject-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 32px rgba(59, 91, 219, 0.12);
-    border-color: #b4c0f0;
-}
-
-/* Colored top accent bar */
-.card-accent {
-    height: 4px;
-    background: #3b5bdb;
-}
-
-.subject-card:nth-child(2n) .card-accent {
-    background: #0ca678;
-}
-
-.subject-card:nth-child(3n) .card-accent {
-    background: #f59f00;
-}
-
-.subject-card:nth-child(4n) .card-accent {
-    background: #f03e3e;
-}
-
-.subject-card:nth-child(5n) .card-accent {
-    background: #7950f2;
-}
-
-/* Card body */
-.card-body {
-    padding: 22px 22px 16px;
-    flex: 1;
-}
-
-.subject-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 17px;
-    font-weight: 600;
-    color: #1a1f36;
-    line-height: 1.35;
-    margin-bottom: 12px;
-}
-
-.subject-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 7px;
-    margin-top: 10px;
-}
-
-.meta-tag {
-    font-size: 12px;
-    font-weight: 500;
-    color: #3b5bdb;
-    background: #eef2ff;
-    border: 1px solid #c5d0fa;
-    border-radius: 20px;
-    padding: 4px 11px;
-    letter-spacing: 0.2px;
-}
-
-/* Card footer */
-.card-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 22px;
-    border-top: 1px solid #f0f1f5;
-    background: #fafbfc;
-}
-
-.card-number {
-    font-size: 12px;
-    color: #b0b8cc;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-}
-
-.action-btn {
-    background: #3b5bdb;
-    border: none;
-    color: #ffffff;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 12px;
-    font-weight: 600;
-    padding: 6px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    letter-spacing: 0.4px;
-    transition: all 0.2s ease;
-}
-
-.action-btn:hover {
-    background: #2f4ac4;
-}
-
-/* ──────────────────────────────────────────
-   LOGIN CARD (kept for login page)
-────────────────────────────────────────── */
-.card {
-    background: #ffffff;
-    border: 1px solid #e2e5ec;
-    padding: 40px;
-    width: 460px;
-    border-radius: 16px;
-    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
-}
-
-.card h2 {
-    font-family: 'Playfair Display', serif;
-    color: #1a1f36;
-    text-align: center;
-    margin-bottom: 6px;
-    font-size: 26px;
-    font-weight: 700;
-}
-
-.card p.login-subtitle {
-    text-align: center;
-    color: #6b7280;
-    font-size: 14px;
-    margin-bottom: 28px;
-}
-
-.card label {
-    display: block;
-    font-size: 13px;
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 6px;
-    letter-spacing: 0.2px;
-}
-
-.card input {
-    width: 100%;
-    padding: 11px 14px;
-    margin-bottom: 18px;
-    background: #eef2ff;
-    border: 1.5px solid #e2e5ec;
-    color: #1a1f36;
-    border-radius: 8px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    transition: border-color 0.2s;
-}
-
-.card input:focus {
-    outline: none;
-    border-color: #3b5bdb;
-    background: #fff;
-}
-
-.card button {
-    width: 100%;
-    padding: 12px;
-    background: #3b5bdb;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    color: white;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-    transition: background 0.2s;
-}
-
-.card button:hover {
-    background: #2f4ac4;
-}
-
-/* ──────────────────────────────────────────
-   RESPONSIVE
-────────────────────────────────────────── */
-@media (max-width: 768px) {
-    .dashboard-wrapper {
-        padding: 30px 20px;
-    }
-
-    .subjects-grid {
-        justify-content: center;
-    }
-
-    .subject-card {
-        width: 100%;
-        max-width: 340px;
-    }
-
-    .dashboard-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 16px;
-    }
-}
-
-/* ================================================
-   MARKS ENTRY PAGE
-================================================ */
-.marks-wrapper {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 44px 40px 60px;
-}
-.marks-header {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    margin-bottom: 32px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--border-header);
-    transition: border-color 0.3s ease;
-}
-.marks-header h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 30px;
-    font-weight: 700;
-    color: var(--text-primary);
-    letter-spacing: -0.4px;
-    transition: color 0.3s ease;
-}
-.marks-subtitle {
-    margin-top: 5px;
-    font-size: 13px;
-    color: var(--text-secondary);
-    transition: color 0.3s ease;
-}
-.marks-badge {
-    background: var(--accent);
-    border-radius: 10px;
-    padding: 10px 18px;
-    text-align: center;
-    min-width: 60px;
-    box-shadow: var(--shadow-badge);
-    transition: background 0.3s ease;
-}
-.marks-badge span {
-    display: block;
-    font-size: 22px;
-    font-weight: 700;
-    color: #fff;
-    font-family: 'Playfair Display', serif;
-    line-height: 1;
-}
-.marks-badge small {
-    display: block;
-    font-size: 10px;
-    color: rgba(255,255,255,0.75);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-top: 3px;
-}
-.table-container {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    overflow: hidden;
-    box-shadow: var(--shadow-card);
-    transition: background 0.3s ease, border-color 0.3s ease;
-}
-.marks-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-}
-.marks-table thead tr {
-    background: var(--accent);
-}
-.marks-table thead th {
-    padding: 14px 18px;
-    text-align: left;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 11px;
-    font-weight: 600;
-    color: rgba(255,255,255,0.92);
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    white-space: nowrap;
-}
-.marks-table thead th:nth-child(n+3) { text-align: center; }
-.marks-table tbody tr {
-    border-bottom: 1px solid var(--border-footer);
-    transition: background 0.15s ease;
-    animation: rowReveal 0.3s ease both;
-}
-.marks-table tbody tr:last-child { border-bottom: none; }
-.marks-table tbody tr:nth-child(even) { background: var(--bg-card-footer); }
-.marks-table tbody tr:nth-child(odd)  { background: var(--bg-card); }
-.marks-table tbody tr:hover           { background: var(--accent-light); }
-@keyframes rowReveal {
-    from { opacity: 0; transform: translateX(-8px); }
-    to   { opacity: 1; transform: translateX(0); }
-}
-.marks-table tbody td {
-    padding: 13px 18px;
-    color: var(--text-primary);
-    font-size: 14px;
-    transition: color 0.3s ease, background 0.15s ease;
-}
-.marks-table tbody td:first-child {
-    font-family: 'Playfair Display', serif;
-    font-weight: 600;
-    font-size: 13px;
-    color: var(--accent);
-}
-.marks-table tbody td:nth-child(2) { font-weight: 500; }
-.marks-table tbody td:nth-child(n+3) {
-    text-align: center;
-    font-variant-numeric: tabular-nums;
-    font-weight: 500;
-}
-
-@media (max-width: 768px) {
-    .marks-wrapper { padding: 24px 16px 40px; }
-    .marks-header { flex-direction: column; align-items: flex-start; gap: 12px; }
-    .marks-header h1 { font-size: 22px; }
-    .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    .marks-table thead th,
-    .marks-table tbody td { padding: 11px 13px; font-size: 13px; }
-}
-/* ── DARK MODE FORCE FIX ── */
 body.dark-mode .subject-card {
     background: #1a2035 !important;
     border-color: rgba(255,255,255,0.07) !important;
@@ -1178,4 +619,141 @@ body.dark-mode .header-text .subtitle {
 
 body.dark-mode .dashboard-header {
     border-bottom-color: rgba(255,255,255,0.07) !important;
+}
+
+/* ================================================
+   ANALYTICS BUTTON
+================================================ */
+.btn-analytics {
+    display: inline-block;
+    padding: 6px 16px;
+    background-color: transparent;
+    color: var(--accent); 
+    text-decoration: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1.5px solid var(--accent);
+    border-radius: 6px;
+    transition: all 0.3s ease-in-out;
+    letter-spacing: 0.4px;
+}
+
+/* Light mode hover */
+.btn-analytics:hover {
+    background-color: var(--accent);
+    color: #ffffff;
+    box-shadow: 0 0 10px var(--accent-border), inset 0 0 5px var(--accent-border);
+    transform: translateY(-2px);
+}
+
+/* Dark mode specific neon tweaks */
+body.dark-mode .btn-analytics {
+    border-color: #d6bcfa; /* Soft violet */
+    color: #d6bcfa;
+}
+
+body.dark-mode .btn-analytics:hover {
+    background-color: #805ad5; /* Deep violet */
+    border-color: #f687b3; /* Neon pink border */
+    color: #ffffff !important;
+    box-shadow: 0 0 15px #f687b3, inset 0 0 8px #805ad5;
+}
+
+
+/* ── MARK INPUT ── */
+.mark-input {
+    width: 100%;
+    padding: 8px 10px;
+    background: var(--bg-input);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    text-align: center;
+    transition: border-color 0.2s ease, background 0.2s ease;
+    -moz-appearance: textfield;
+}
+
+.mark-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: var(--bg-card);
+}
+
+/* Remove number input arrows */
+.mark-input::-webkit-outer-spin-button,
+.mark-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+/* ── TOTAL BADGE ── */
+.total-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 20px;
+    background: var(--accent-light);
+    border: 1px solid var(--accent-border);
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 13px;
+    min-width: 40px;
+    text-align: center;
+}
+
+/* ── UPDATE BUTTON ── */
+.update-btn {
+    background: var(--accent);
+    border: none;
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 8px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s ease;
+}
+
+.update-btn:hover {
+    background: var(--accent-hover);
+}
+
+/* ── FIX: marks table layout ── */
+.marks-wrapper {
+    max-width: 100%;
+    padding: 44px 24px 60px;
+}
+
+.table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.marks-table {
+    min-width: 900px;   /* forces table to be wide enough internally */
+    table-layout: fixed;
+}
+
+/* Column widths — controls how space is distributed */
+.marks-table th:nth-child(1) { width: 100px; }   /* Roll No */
+.marks-table th:nth-child(2) { width: 140px; }   /* Name */
+.marks-table th:nth-child(3) { width: 140px; }   /* Assignment */
+.marks-table th:nth-child(4) { width: 140px; }   /* Attendance */
+.marks-table th:nth-child(5) { width: 130px; }   /* Series 1 */
+.marks-table th:nth-child(6) { width: 130px; }   /* Series 2 */
+.marks-table th:nth-child(7) { width: 80px;  }   /* Total */
+.marks-table th:nth-child(8) { width: 100px; }   /* Action */
+
+/* Prevent name from wrapping awkwardly */
+.marks-table tbody td:nth-child(2) {
+    word-break: break-word;
+}
+
+/* Make inputs fill their column properly */
+.mark-input {
+    width: 100%;
+    max-width: 110px;
 }
