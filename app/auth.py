@@ -16,8 +16,10 @@ def login():
         cursor = conn.cursor(dictionary=True)
 
         cursor.execute(
-            "SELECT * FROM professor WHERE email=%s",
-            (email,)
+          cursor.execute(
+    "SELECT p_id, name, password_hash FROM professor WHERE email=%s",
+    (email,)
+)
         )
 
         user = cursor.fetchone()
