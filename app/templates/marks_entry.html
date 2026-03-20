@@ -1,6 +1,30 @@
 {% extends "base.html" %}
 {% block title %}Mark Entry{% endblock %}
 
+  {% block nav_title %}
+        <div class="logo">
+            <span class="logo-icon">🎓</span>
+            <span></span>
+        </div>
+        {% endblock %}
+
+
+{% block topbar_right %}
+<span class="topbar-welcome"> Prof. {{ prof_name }}</span>
+<div class="avatar">{{ prof_name[0] | upper }}</div>
+{% endblock %}
+
+{% block sidebar %}
+<a href="/dashboard" class="nav-link active">
+    <span class="nav-icon"></span>
+    <span>Dashboard</span>
+</a>
+<a href="/logout" class="nav-link nav-link-danger">
+    <span class="nav-icon"></span>
+    <span>Logout</span>
+</a>
+{% endblock %}
+
 {% block content %}
 <div class="marks-wrapper">
 
