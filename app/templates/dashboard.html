@@ -1,65 +1,51 @@
 {% extends "base.html" %}
 {% block title %}Professor Dashboard{% endblock %}
+{% block topbar_title %}Faculty Workstation{% endblock %}
 
-{% block nav_title %}
-<div class="logo">
-    <span class="logo-icon">🎓</span>
-    <span>Welcome, Prof. {{ name }}</span>
-</div>
+{% block topbar_right %}
+<span class="topbar-welcome">Welcome, Prof. {{ name }}</span>
+<div class="avatar">{{ name[0] | upper }}</div>
+{% endblock %}
+
+{% block sidebar %}
+<a href="/dashboard" class="nav-link active">
+    <span class="nav-icon"></span>
+    <span>Dashboard</span>
+</a>
+<a href="/logout" class="nav-link nav-link-danger">
+    <span class="nav-icon"></span>
+    <span>Logout</span>
+</a>
 {% endblock %}
 
 {% block content %}
-<div class="dashboard-wrapper">
+<div class="subject-list-wrapper">
 
-    <div class="dashboard-header">
-        <div class="header-text">
-            <h1>Your Subjects</h1>
-            <p class="subtitle">{{ user|length }} subject{{ 's' if user|length != 1 else '' }} assigned this semester</p>
-        </div>
-        <div class="header-badge">
-            <span>{{ user|length }}</span>
-            <small>Total</small>
-        </div>
-    </div>
+    {% for subject in user %}
+    <div class="subject-row"
+         onclick="window.location.href='/marks_entry?pid={{ subject.p_id }}&tid={{ subject.t_id }}&semno={{ subject.sem_number }}&sub_code={{ subject.subject_code }}'">
 
-    <div class="subjects-grid">
-        {% for subject in user %}
-        
-      <div class="subject-card" 
-     style="--card-index: {{ loop.index }}" 
-     onclick="window.location.href='/marks_entry?pid={{ subject.p_id }}&tid={{ subject.t_id }}&semno={{ subject.sem_number }}&sub_code={{ subject.subject_code }}'">
-            <div class="card-accent"></div>
-            <div class="card-body">
-               
-                {% if subject|length > 0 %}
-                    
-                {% endif %}
-                {% if subject|length > 1 %}
-                    <div class="subject-meta">
-                        
-                            <span class="meta-tag">{{ subject['Teaching'] }}</span>
-                            <span class="meta-tag">{{ subject['To Branch']  }}</span>
-                            <span class="meta-tag">S{{ subject['sem_number']  }}</span>
-                        
-                    </div>
-                {% endif %}
-            </div>
-            <div class="card-footer" >
-                <span class="card-number">{{ loop.index }}</span>
-                
-                <div class="card-actions" style="display: flex; gap: 10px; align-items: center;">
-                    <button class="action-btn">View</button>
-                    
-                    <a href="{{ url_for('views.performance_graphs', pid=subject.p_id, tid=subject.t_id, semno=subject.sem_number, sub_code=subject.subject_code) }}" 
-                       class="btn-analytics"
-                       onclick="event.stopPropagation();"> Analytics
-                    </a>
-                </div>
-                
+        <div class="subject-row-left">
+            <div class="subject-row-name">{{ subject['Teaching'] }}</div>
+            <div class="subject-row-meta">
+                Branch: {{ subject['To Branch'] }} | Sem: {{ subject['sem_number'] }}
             </div>
         </div>
-        {% endfor %}
+
+        <div class="subject-row-right">
+            <span class="subject-code-badge">{{ subject.subject_code }}</span>
+            <div class="subject-row-actions" onclick="event.stopPropagation()">
+                <a href="{{ url_for('views.performance_graphs', pid=subject.p_id, tid=subject.t_id, semno=subject.sem_number, sub_code=subject.subject_code) }}"
+                   class="btn-analytics">Analytics</a>
+                <button class="action-btn"
+                        onclick="window.location.href='/marks_entry?pid={{ subject.p_id }}&tid={{ subject.t_id }}&semno={{ subject.sem_number }}&sub_code={{ subject.subject_code }}'">
+                    View
+                </button>
+            </div>
+        </div>
+
     </div>
+    {% endfor %}
 
 </div>
 {% endblock %}
