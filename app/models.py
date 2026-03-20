@@ -25,3 +25,5 @@ def get_connection():
     except Error as e:
         print(f"Error while connecting to Mysql: {e}")
         return None 
+
+    
