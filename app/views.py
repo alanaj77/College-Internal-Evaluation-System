@@ -16,14 +16,14 @@ def dashboard():
         return redirect(url_for("auth.login"))
     
     user_id = session["user_id"] 
-   
+    
     sql = """
     SELECT 
         p.p_id,
         a.t_id,
         a.sem_number,
         s.subject_code,
-        p.name, 
+        p.name as profname, 
         s.subject_name AS Teaching, 
         a.branch_id AS `To Branch` 
     FROM t_assignment a
@@ -40,7 +40,7 @@ def dashboard():
         cursor.execute(sql, (user_id,))
         user = cursor.fetchall()
         
-        prof_name = user[0]['name'] if user else "Professor"
+        prof_name = user[0]['profname'] if user else "Professor"
         return render_template("dashboard.html", name=prof_name, user_id=session["user_id"], user=user)
         
     except Error as e:
@@ -58,10 +58,13 @@ def marks_entry():
         return redirect(url_for("auth.login"))
 
     pid      = request.args.get('pid')
+    
     tid      = request.args.get('tid')
     semno    = request.args.get('semno')
     sub_code = request.args.get('sub_code')
 
+    prof_name = session.get('name', '')
+    
     conn   = get_connection()
     cursor = conn.cursor(dictionary=True)
 
@@ -100,7 +103,7 @@ def marks_entry():
         return render_template('marks_entry.html',
                                students=students,
                                subject_name=subject_name,
-                               sub_code=sub_code)
+                               sub_code=sub_code,prof_name=prof_name)
     except Error as e:
         print(f"Error: {e}")
         return "Error fetching data", 500
@@ -163,6 +166,7 @@ def performance_graphs():
     semno    = request.args.get('semno')
     sub_code = request.args.get('sub_code')
     
+    prof_name = session.get('name','')
     # Get graph type from URL, default to categorization
     graph_type = request.args.get('graph_type', 'categorization')
 
@@ -306,7 +310,7 @@ def performance_graphs():
         plt.close('all') 
 
         return render_template('performance.html', plot_url=plot_url, 
-                               pid=pid, tid=tid, semno=semno, sub_code=sub_code, current_graph=graph_type)
+                               pid=pid, tid=tid, semno=semno, sub_code=sub_code, current_graph=graph_type,prof_name=prof_name)
 
     except Error as e:
         print(f"Query Error: {e}")

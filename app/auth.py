@@ -29,6 +29,7 @@ def login():
 
         if user and check_password_hash(user["password_hash"], password):
             session["user_id"] = user["p_id"]
+            session["name"]   = user["name"]
             
             return redirect(url_for("views.dashboard",name = user["name"]))
         else:
