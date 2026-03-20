@@ -117,16 +117,37 @@
 </div>
 
 <script>
-// Live total calculation in the browser
-function calcTotal(adm_no) {
+// Live calculation with strict frontend validation
+function calcTotal(adm_no, inputElement, maxAllowed) {
+    // 1. VALIDATION: Prevent typing numbers higher than the max or lower than 0
+    let val = parseFloat(inputElement.value);
+    
+    if (val > maxAllowed) {
+        inputElement.value = maxAllowed; // Auto-correct to max
+        inputElement.style.borderColor = '#f03e3e'; // Flash red to warn them
+        setTimeout(() => inputElement.style.borderColor = '', 800);
+    } else if (val < 0) {
+        inputElement.value = 0; // Prevent negative marks
+    }
+
+    // 2. CALCULATION: Re-grab the validated values
     const a  = parseFloat(document.getElementById('assignment-' + adm_no).value) || 0;
     const at = parseFloat(document.getElementById('attendance-' + adm_no).value) || 0;
     const s1 = parseFloat(document.getElementById('series1-'    + adm_no).value) || 0;
     const s2 = parseFloat(document.getElementById('series2-'    + adm_no).value) || 0;
 
     const total = a + at + s1 + s2;
+    
+    // 3. UI UPDATE: Update the total badge
     const badge = document.getElementById('total-' + adm_no);
     badge.textContent = total > 0 ? total : '-';
+    
+    // Optional: Turn the total green if they hit a perfect 40
+    if (total === 40) {
+        badge.style.backgroundColor = '#0ca678';
+    } else {
+        badge.style.backgroundColor = 'var(--accent)';
+    }
 }
 
 // Copy visible input values into hidden fields before form submits
