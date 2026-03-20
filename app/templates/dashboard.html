@@ -4,7 +4,9 @@
 
 {% block topbar_right %}
 <span class="topbar-welcome">Welcome, Prof. {{ name }}</span>
-<div class="avatar">{{ name[0] | upper }}</div>
+<div class="avatar">
+{{ name.replace('Dr. ', '').replace('Prof. ', '').strip()[0].upper() }}
+</div>
 {% endblock %}
 
 {% block sidebar %}
