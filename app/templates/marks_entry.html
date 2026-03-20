@@ -1,13 +1,12 @@
 {% extends "base.html" %}
 {% block title %}Mark Entry{% endblock %}
 
-  {% block nav_title %}
-        <div class="logo">
-            <span class="logo-icon">🎓</span>
-            <span></span>
-        </div>
-        {% endblock %}
-
+{% block nav_title %}
+<div class="logo">
+    <span class="logo-icon">🎓</span>
+    <span></span>
+</div>
+{% endblock %}
 
 {% block topbar_right %}
 <span class="topbar-welcome"> Prof. {{ prof_name }}</span>
@@ -45,10 +44,10 @@
                 <tr>
                     <th>Roll No</th>
                     <th>Name</th>
-                    <th>Assignment (Out of 15)</th>
-                    <th>Attendance (Out of 5)</th>
-                    <th>Series 1 (Out of 10)</th>
-                    <th>Series 2 (Out of 10)</th>
+                    <th>Assignment (Max 15)</th>
+                    <th>Attendance (Max 5)</th>
+                    <th>Series 1 (Max 10)</th>
+                    <th>Series 2 (Max 10)</th>
                     <th>Total (Out of 40)</th>
                     <th>Action</th>
                 </tr>
@@ -63,38 +62,41 @@
                         <input class="mark-input" type="number" min="0" max="15" step="0.5"
                                id="assignment-{{ student['adm_no'] }}"
                                value="{{ student['assignment_marks'] or '' }}"
-                               oninput="calcTotal('{{student.adm_no}}')">
+                               oninput="calcTotal('{{ student['adm_no'] }}', this, 15)">
                     </td>
+                    
                     <td>
                         <input class="mark-input" type="number" min="0" max="5" step="0.5"
                                id="attendance-{{ student['adm_no'] }}"
                                value="{{ student['attendance_marks'] or '' }}"
-                               oninput="calcTotal('{{ student.adm_no}}')">
+                               oninput="calcTotal('{{ student['adm_no'] }}', this, 5)">
                     </td>
+                    
                     <td>
                         <input class="mark-input" type="number" min="0" max="10" step="0.5"
                                id="series1-{{ student['adm_no'] }}"
                                value="{{ student['series_one'] or '' }}"
-                               oninput="calcTotal('{{ student.adm_no }}')">
+                               oninput="calcTotal('{{ student['adm_no'] }}', this, 10)">
                     </td>
+                    
                     <td>
                         <input class="mark-input" type="number" min="0" max="10" step="0.5"
                                id="series2-{{ student['adm_no'] }}"
                                value="{{ student['series_two'] or '' }}"
-                               oninput="calcTotal('{{ student.adm_no }}')">
+                               oninput="calcTotal('{{ student['adm_no'] }}', this, 10)">
                     </td>
 
-                    <!-- Total — shown live, calculated by JS (trigger saves it in DB) -->
-                    <td>
-                        <span class="total-badge" id="total-{{ student['adm_no'] }}">
+                   <td style="font-weight: bold; font-size: 16px;">
+                        <span id="total-{{ student['adm_no'] }}" 
+                              style="padding: 4px 10px; border-radius: 6px; transition: background 0.3s, color 0.3s; 
+                              {% if student['total_mark'] == 40 %} background-color: #0ca678; color: white; {% endif %}">
                             {{ student['total_mark'] or '-' }}
                         </span>
                     </td>
 
-                    <!-- Update button — each row has its own form -->
                     <td>
-                        <form method="POST" action="/update_marks">
-                            <input type="hidden" name="adm_no"      value="{{ student['adm_no'] }}">
+                        <form method="POST" action="/update_marks" style="margin: 0;" onsubmit="return syncHidden('{{ student['adm_no'] }}')">
+                            <input type="hidden" name="adm_no"       value="{{ student['adm_no'] }}">
                             <input type="hidden" name="sub_code"     value="{{ sub_code }}">
                             <input type="hidden" name="redirect_url" value="{{ request.url }}">
 
@@ -103,9 +105,8 @@
                             <input type="hidden" name="series_one"        id="h-series1-{{ student['adm_no'] }}"     value="{{ student['series_one'] or '' }}">
                             <input type="hidden" name="series_two"        id="h-series2-{{ student['adm_no'] }}"     value="{{ student['series_two'] or '' }}">
 
-                            <button type="submit" class="update-btn"
-                                    onclick="syncHidden('{{ student.adm_no }}')">
-                                Update
+                            <button type="submit" class="action-btn">
+                                Save
                             </button>
                         </form>
                     </td>
@@ -119,43 +120,77 @@
 <script>
 // Live calculation with strict frontend validation
 function calcTotal(adm_no, inputElement, maxAllowed) {
-    // 1. VALIDATION: Prevent typing numbers higher than the max or lower than 0
-    let val = parseFloat(inputElement.value);
-    
-    if (val > maxAllowed) {
-        inputElement.value = maxAllowed; // Auto-correct to max
-        inputElement.style.borderColor = '#f03e3e'; // Flash red to warn them
-        setTimeout(() => inputElement.style.borderColor = '', 800);
-    } else if (val < 0) {
-        inputElement.value = 0; // Prevent negative marks
+    let rawStr = inputElement.value;
+    let val = parseFloat(rawStr);
+
+    // 1. STRICT VALIDATION & VISUAL FEEDBACK
+    if (rawStr !== "" && !isNaN(val) && val > maxAllowed) {
+        inputElement.value = maxAllowed; // Auto-correct to maximum
+        
+        // Force the visual flash, overriding browser focus rings
+        inputElement.style.outline = "none";
+        inputElement.style.boxShadow = "0 0 8px 2px #f03e3e";
+        inputElement.style.borderColor = "#f03e3e";
+        inputElement.style.backgroundColor = "#ffe3e3"; // Light red background
+        inputElement.style.color = "#1a1f36"; 
+
+        // Remove the warning styles after 800ms
+        setTimeout(() => {
+            inputElement.style.boxShadow = "";
+            inputElement.style.borderColor = "";
+            inputElement.style.backgroundColor = "";
+            inputElement.style.outline = "";
+            inputElement.style.color = "";
+        }, 800);
+        
+    } else if (rawStr !== "" && !isNaN(val) && val < 0) {
+        inputElement.value = 0; // Prevent negative numbers
     }
 
-    // 2. CALCULATION: Re-grab the validated values
-    const a  = parseFloat(document.getElementById('assignment-' + adm_no).value) || 0;
-    const at = parseFloat(document.getElementById('attendance-' + adm_no).value) || 0;
-    const s1 = parseFloat(document.getElementById('series1-'    + adm_no).value) || 0;
-    const s2 = parseFloat(document.getElementById('series2-'    + adm_no).value) || 0;
+    // 2. SAFE CALCULATION
+    let a  = parseFloat(document.getElementById('assignment-' + adm_no).value) || 0;
+    let at = parseFloat(document.getElementById('attendance-' + adm_no).value) || 0;
+    let s1 = parseFloat(document.getElementById('series1-'    + adm_no).value) || 0;
+    let s2 = parseFloat(document.getElementById('series2-'    + adm_no).value) || 0;
 
-    const total = a + at + s1 + s2;
+    let total = a + at + s1 + s2;
     
-    // 3. UI UPDATE: Update the total badge
-    const badge = document.getElementById('total-' + adm_no);
-    badge.textContent = total > 0 ? total : '-';
-    
-    // Optional: Turn the total green if they hit a perfect 40
-    if (total === 40) {
-        badge.style.backgroundColor = '#0ca678';
-    } else {
-        badge.style.backgroundColor = 'var(--accent)';
+    // 3. UI UPDATE
+    let badge = document.getElementById('total-' + adm_no);
+    if (badge) {
+        badge.innerText = total > 0 ? total : '-';
+        
+        // Color code the total badge
+        if (total === 40) {
+            badge.style.backgroundColor = '#0ca678'; // Green background for perfect score
+            badge.style.color = '#ffffff';           // White text
+        } else {
+            badge.style.backgroundColor = 'transparent'; // Remove background
+            badge.style.color = '';                      // Default text color
+        }
     }
 }
 
-// Copy visible input values into hidden fields before form submits
+// Validates and copies visible input values into hidden fields before form submits
 function syncHidden(adm_no) {
-    document.getElementById('h-assignment-' + adm_no).value = document.getElementById('assignment-' + adm_no).value;
-    document.getElementById('h-attendance-' + adm_no).value = document.getElementById('attendance-' + adm_no).value;
-    document.getElementById('h-series1-'    + adm_no).value = document.getElementById('series1-'    + adm_no).value;
-    document.getElementById('h-series2-'    + adm_no).value = document.getElementById('series2-'    + adm_no).value;
+    const a_el  = document.getElementById('assignment-' + adm_no);
+    const at_el = document.getElementById('attendance-' + adm_no);
+    const s1_el = document.getElementById('series1-'    + adm_no);
+    const s2_el = document.getElementById('series2-'    + adm_no);
+
+    // Final security check
+    if (!a_el.checkValidity() || !at_el.checkValidity() || !s1_el.checkValidity() || !s2_el.checkValidity()) {
+        alert("Wait! Please fix the invalid marks before saving.");
+        return false; // Blocks the form submission
+    }
+
+    // Copy data to the hidden form fields
+    document.getElementById('h-assignment-' + adm_no).value = a_el.value;
+    document.getElementById('h-attendance-' + adm_no).value = at_el.value;
+    document.getElementById('h-series1-'    + adm_no).value = s1_el.value;
+    document.getElementById('h-series2-'    + adm_no).value = s2_el.value;
+    
+    return true; // Allows the form to submit
 }
 </script>
 {% endblock %}
