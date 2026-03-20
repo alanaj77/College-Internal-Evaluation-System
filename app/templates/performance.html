@@ -1,6 +1,20 @@
 {% extends "base.html" %}
 
 {% block title %}Performance Analytics{% endblock %}
+{% block topbar_right %}
+<span class="topbar-welcome"> Prof. {{ prof_name }}</span>
+<div class="avatar">{{ prof_name[0] | upper }}</div>
+{% endblock %}
+{% block sidebar %}
+<a href="/dashboard" class="nav-link active">
+    <span class="nav-icon"></span>
+    <span>Dashboard</span>
+</a>
+<a href="/logout" class="nav-link nav-link-danger">
+    <span class="nav-icon"></span>
+    <span>Logout</span>
+</a>
+{% endblock %}
 
 {% block content %}
 <div class="dashboard-wrapper">
