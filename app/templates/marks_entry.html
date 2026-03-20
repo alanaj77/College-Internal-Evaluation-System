@@ -60,25 +60,25 @@
                     <td>{{ student['name'] }}</td>
 
                     <td>
-                        <input class="mark-input" type="number" min="0" max="10"
+                        <input class="mark-input" type="number" min="0" max="15" step="0.5"
                                id="assignment-{{ student['adm_no'] }}"
                                value="{{ student['assignment_marks'] or '' }}"
                                oninput="calcTotal('{{student.adm_no}}')">
                     </td>
                     <td>
-                        <input class="mark-input" type="number" min="0" max="10"
+                        <input class="mark-input" type="number" min="0" max="5" step="0.5"
                                id="attendance-{{ student['adm_no'] }}"
                                value="{{ student['attendance_marks'] or '' }}"
                                oninput="calcTotal('{{ student.adm_no}}')">
                     </td>
                     <td>
-                        <input class="mark-input" type="number" min="0" max="15"
+                        <input class="mark-input" type="number" min="0" max="10" step="0.5"
                                id="series1-{{ student['adm_no'] }}"
                                value="{{ student['series_one'] or '' }}"
                                oninput="calcTotal('{{ student.adm_no }}')">
                     </td>
                     <td>
-                        <input class="mark-input" type="number" min="0" max="15"
+                        <input class="mark-input" type="number" min="0" max="10" step="0.5"
                                id="series2-{{ student['adm_no'] }}"
                                value="{{ student['series_two'] or '' }}"
                                oninput="calcTotal('{{ student.adm_no }}')">
