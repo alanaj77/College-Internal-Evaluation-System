@@ -16,11 +16,13 @@ def login():
 
         if admin_username == adminID and admin_password == adminPass:
             session["role"] = "admin"
-            return redirect(url_for("admin.dashboard")) # <-- Removed unused 'name' parameter
+            return redirect(url_for("admin.dashboard"))
         else:
-            return render_template("admin/login.html", error="Invalid credentials")
+            # UPDATE 1: Point to the unified login page, pass the error, and keep the admin tab active
+            return render_template("login.html", error="Invalid credentials", active_tab="admin")
    
-    return render_template("admin/login.html")
+    # UPDATE 2: When they first visit /admin/login, load the unified page with the admin tab active
+    return render_template("login.html", active_tab="admin")
 
 
 @admin.route("/admin/dashboard")
