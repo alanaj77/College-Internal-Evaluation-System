@@ -3,15 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faculty Login | Mark Analysis System</title>
+    <title>System Login | Evaluation Portal</title>
     <style>
-        /* CSS STYLES FOR LOGIN PAGE */
         :root {
-            --primary-color: #2563eb; 
-            --primary-hover: #1d4ed8;
+            --primary-color: #3b5bdb; 
+            --primary-hover: #2f4ac4;
+            --admin-color: #f03e3e;
+            --admin-hover: #c92a2a;
             --bg-color: #f3f4f6;
             --text-dark: #1f2937;
+            --text-secondary: #6b7280;
             --white: #ffffff;
+            --border: #e5e7eb;
         }
 
         body {
@@ -20,7 +23,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', system-ui, sans-serif;
             margin: 0;
         }
 
@@ -29,98 +32,173 @@
             padding: 2.5rem;
             width: 100%;
             max-width: 400px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Toggle Switch Styles */
+        .login-toggle-container {
+            display: flex;
+            background: var(--bg-color);
+            border-radius: 30px;
+            padding: 5px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border);
+        }
+
+        .toggle-btn {
+            flex: 1;
+            padding: 10px 0;
             text-align: center;
-        }
-
-        .login-header h2 {
-            color: var(--text-dark);
-            margin-bottom: 0.5rem;
-        }
-
-        .login-header p {
-            color: #6b7280;
-            margin-bottom: 2rem;
-            font-size: 0.9rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.25rem;
-            text-align: left;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: var(--text-dark);
-            font-weight: 500;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            box-sizing: border-box; /* Fixes padding issues */
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 0.75rem;
-            background-color: var(--primary-color);
-            color: var(--white);
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
+            border-radius: 25px;
             cursor: pointer;
-            margin-top: 1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+            font-size: 14px;
         }
 
-        .login-btn:hover {
-            background-color: var(--primary-hover);
+        .toggle-btn.active-faculty {
+            background: var(--primary-color);
+            color: var(--white);
+            box-shadow: 0 4px 10px rgba(59,91,219,0.3);
+        }
+
+        .toggle-btn.active-admin {
+            background: var(--admin-color);
+            color: var(--white);
+            box-shadow: 0 4px 10px rgba(240,62,62,0.3);
+        }
+
+        /* Header & Icon */
+        .login-header { text-align: center; margin-bottom: 1.5rem; }
+        .login-header h2 { color: var(--text-dark); margin-bottom: 0.5rem; font-size: 24px;}
+        .login-header p { color: var(--text-secondary); font-size: 0.9rem; margin: 0;}
+        
+        .icon-box {
+            width: 60px; height: 60px; 
+            border-radius: 16px; 
+            display: inline-flex; align-items: center; justify-content: center; 
+            font-size: 28px; margin-bottom: 16px; 
+            transition: background 0.3s;
+        }
+
+        /* Forms */
+        .form-group { margin-bottom: 1.25rem; text-align: left; }
+        .form-group label { display: block; margin-bottom: 0.5rem; color: var(--text-dark); font-weight: 600; font-size: 14px;}
+        .form-group input { 
+            width: 100%; padding: 0.75rem; 
+            border: 1px solid var(--border); border-radius: 8px; 
+            box-sizing: border-box; font-size: 14px;
+        }
+        .form-group input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(59,91,219,0.1); }
+
+        /* Buttons & Errors */
+        .login-btn {
+            width: 100%; padding: 0.85rem; 
+            color: var(--white); border: none; border-radius: 8px; 
+            font-weight: 600; font-size: 16px; cursor: pointer; transition: background 0.3s;
         }
 
         .error-msg {
-            color: red;
-            background: #fee2e2;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 15px;
-            font-size: 0.9rem;
+            color: var(--admin-color); background: #ffe3e3; 
+            padding: 10px; border-radius: 8px; margin-bottom: 20px; 
+            font-size: 13px; text-align: center; font-weight: 600;
         }
-        
     </style>
 </head>
 <body>
 
-    <div class="login-container">
-        <div class="login-header">
-            <h2>Faculty Portal</h2>
-            <p>Enter your credentials to manage marks</p>
-
-        {% if error %}
-        <p style="color:red;">{{ error }}</p>
-        {% endif %}
-        </div>
-        
+<div class="login-container">
     
-        <form action="/login" method="POST">
-            <div class="form-group">
-                <input type="hidden" id="role_input" value="student">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" name="email" placeholder="admin@uni.edu" required>
-            </div>
-
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" placeholder="••••••••" required>
-            </div>
-
-            <button type="submit" class="login-btn">Sign In</button>
-            <button type="submit" class="login-btn" onclick="window.location.href='/admin/login'">admin</button>
-        </form>
+    <div class="login-header">
+        <div id="login-icon" class="icon-box" style="background: var(--primary-color);">🎓</div>
+        <h2 id="login-title">Faculty Portal</h2>
+        <p id="login-subtitle">Enter your credentials to manage marks</p>
     </div>
+
+    {% if error %}
+        <div class="error-msg">{{ error }}</div>
+    {% endif %}
+
+    <div class="login-toggle-container">
+        <div class="toggle-btn active-faculty" id="btn-faculty" onclick="switchTab('faculty')">Professor</div>
+        <div class="toggle-btn" id="btn-admin" onclick="switchTab('admin')">Administrator</div>
+    </div>
+
+    <form id="form-faculty" action="/login" method="POST">
+        <input type="hidden" name="role" value="faculty">
+        
+        <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" name="email" placeholder="professor@uni.edu" required>
+        </div>
+
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="password" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" class="login-btn" style="background-color: var(--primary-color);">Sign In</button>
+    </form>
+
+    <form id="form-admin" action="/admin/login" method="POST" style="display: none;">
+        <div class="form-group">
+            <label>Admin ID</label>
+            <input type="text" name="admin_id" placeholder="Enter admin ID" required>
+        </div>
+
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="password" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" class="login-btn" style="background-color: var(--admin-color);">Login to Admin Panel</button>
+    </form>
+
+</div>
+
+<script>
+    function switchTab(tab) {
+        const btnFac = document.getElementById('btn-faculty');
+        const btnAdm = document.getElementById('btn-admin');
+        const formFac = document.getElementById('form-faculty');
+        const formAdm = document.getElementById('form-admin');
+        
+        const icon = document.getElementById('login-icon');
+        const title = document.getElementById('login-title');
+        const sub = document.getElementById('login-subtitle');
+
+        if (tab === 'faculty') {
+            btnFac.classList.add('active-faculty');
+            btnAdm.classList.remove('active-admin');
+            formFac.style.display = 'block';
+            formAdm.style.display = 'none';
+
+            icon.innerText = '🎓';
+            icon.style.background = 'var(--primary-color)';
+            title.innerText = 'Faculty Portal';
+            sub.innerText = 'Enter your credentials to manage marks';
+        } else {
+            btnAdm.classList.add('active-admin');
+            btnFac.classList.remove('active-faculty');
+            formAdm.style.display = 'block';
+            formFac.style.display = 'none';
+
+            icon.innerText = '🛡️';
+            icon.style.background = 'var(--admin-color)';
+            title.innerText = 'Admin Portal';
+            sub.innerText = 'Internal Evaluation Management System';
+        }
+    }
+
+    // Auto-switch to admin tab if there's an active_tab variable (e.g., wrong admin password)
+    window.onload = function() {
+        {% if active_tab == 'admin' %}
+            switchTab('admin');
+        {% endif %}
+    };
+</script>
 
 </body>
 </html>
