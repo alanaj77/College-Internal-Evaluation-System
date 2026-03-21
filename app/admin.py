@@ -117,6 +117,97 @@ def add_student():
 
     return render_template('admin/add_student.html', error=error, success=success)
 
+@admin.route('/admin/map_subject', methods=['GET', 'POST'])
+def map_subject():
+    if session.get('role') != 'admin':
+        return redirect(url_for('admin.login'))
+
+    # Fetch professors and subjects for dropdowns
+    conn   = get_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT p_id, name FROM professor")
+    professors = cursor.fetchall()
+    cursor.execute("SELECT subject_code, subject_name FROM subject")
+    subjects = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    error   = None
+    success = None
+
+    if request.method == 'POST':
+        p_id          = request.form.get('p_id')
+        subject_code  = request.form.get('subject_code')
+        branch_id     = request.form.get('branch_id')
+        sem_number    = request.form.get('sem_number')
+        academic_year = request.form.get('academic_year')
+
+        conn   = get_connection()
+        cursor = conn.cursor()
+        try:
+            cursor.execute("""
+                INSERT INTO t_assignment
+                (p_id, subject_code, academic_year, branch_id, sem_number)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (p_id, subject_code, academic_year, branch_id, sem_number))
+            conn.commit()
+            success = "Subject mapped to professor successfully."
+        except Error as e:
+            conn.rollback()
+            error = f"Error: {e}"
+        finally:
+            cursor.close()
+            conn.close()
+
+    return render_template('admin/map_subject.html',
+                           professors=professors,
+                           subjects=subjects,
+                           error=error,
+                           success=success)
+
+from werkzeug.security import generate_password_hash
+
+@admin.route('/admin/add_professor', methods=['GET', 'POST'])
+def add_professor():
+    if session.get('role') != 'admin':
+        return redirect(url_for('admin.login'))
+
+    error   = None
+    success = None
+
+    if request.method == 'POST':
+        name        = request.form.get('name')
+        email       = request.form.get('email')
+        phone       = request.form.get('phone')
+        designation = request.form.get('designation')
+        status      = request.form.get('status')
+        password    = request.form.get('password')
+
+        # Hash the password using scrypt — same method as existing records
+        password_hash = generate_password_hash(password)
+
+        conn   = get_connection()
+        cursor = conn.cursor()
+        try:
+            cursor.execute("""
+                INSERT INTO professor
+                (name, email, phone, status, designation, password_hash)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """, (name, email, phone, status, designation, password_hash))
+            conn.commit()
+            success = f"Professor {name} added successfully."
+        except Error as e:
+            conn.rollback()
+            error = f"Error: {e}"
+        finally:
+            cursor.close()
+            conn.close()
+
+    return render_template('admin/add_professor.html',
+                           error=error,
+                           success=success)
+
+
 @admin.route("/admin/logout") # <-- Added missing leading slash
 def logout():
     session.clear()
