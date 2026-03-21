@@ -12,7 +12,7 @@ views = Blueprint('views', __name__)
 
 @views.route("/dashboard")
 def dashboard():
-    if "user_id" not in session:
+    if "user_id" not in session :
         return redirect(url_for("auth.login"))
     
     user_id = session["user_id"] 
