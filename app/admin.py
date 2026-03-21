@@ -1,21 +1,22 @@
-from flask import Blueprint, render_template, request,session,redirect,url_for
+from flask import Blueprint, render_template, request, session, redirect, url_for
 from .models import get_connection
+from mysql.connector import Error  # <-- Added missing import
 
 admin = Blueprint('admin', __name__)
-@admin.route("/admin/login",methods = ["GET","POST"])
+
+@admin.route("/admin/login", methods=["GET", "POST"])
 def login():
-    
     if request.method == "POST":
         adminID = request.form.get("admin_id")
         adminPass = request.form.get("password")
 
+        # Hardcoded for the mini-project
         admin_username = "admin"
         admin_password = "admin"
 
         if admin_username == adminID and admin_password == adminPass:
             session["role"] = "admin"
-
-            return redirect(url_for("admin.dashboard",name =admin_username))
+            return redirect(url_for("admin.dashboard")) # <-- Removed unused 'name' parameter
         else:
             return render_template("admin/login.html", error="Invalid credentials")
    
@@ -27,9 +28,15 @@ def dashboard():
     if session.get('role') != 'admin':
         return redirect(url_for("admin.login"))
 
-    conn   = get_connection()
-    cursor = conn.cursor()
+    conn = get_connection()
+    
+    # <-- Added safety check in case the database is offline
+    if conn is None: 
+        return "Database Connection Failed", 500
+        
     try:
+        cursor = conn.cursor()
+        
         cursor.execute("SELECT COUNT(*) FROM student_details")
         total_students = cursor.fetchone()[0]
 
@@ -51,10 +58,12 @@ def dashboard():
         print(f"Error: {e}")
         return "Error loading dashboard", 500
     finally:
-        cursor.close()
-        conn.close()
+        if conn and conn.is_connected():
+            cursor.close()
+            conn.close()
 
-@admin.route("admin/logout")
+
+@admin.route("/admin/logout") # <-- Added missing leading slash
 def logout():
     session.clear()
     return redirect(url_for("admin.login"))
