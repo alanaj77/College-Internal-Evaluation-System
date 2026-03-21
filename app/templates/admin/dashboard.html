@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+
 {% block title %}Admin Dashboard{% endblock %}
 {% block topbar_title %}Admin Panel{% endblock %}
 
@@ -14,7 +15,7 @@
 </a>
 <a href="/admin/add_student" class="nav-link">
     <span class="nav-icon">👤</span>
-    <span>Add Student</span>
+    <span >Add Student</span>
 </a>
 <a href="/admin/add_professor" class="nav-link">
     <span class="nav-icon">👨‍🏫</span>
@@ -30,8 +31,8 @@
 </a>
 {% endblock %}
 
-{% block content %}
 
+{% block content %}
 <!-- Stats Row -->
 <div class="admin-stats">
     <div class="stat-card">
@@ -99,4 +100,5 @@
     </div>
 
 </div>
+
 {% endblock %}
