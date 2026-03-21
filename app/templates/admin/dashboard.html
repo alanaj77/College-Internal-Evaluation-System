@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block topbar_title %}Admin Panel{% endblock %}
+
+{% block topbar_right %}
+<span class="topbar-welcome">Administrator</span>
+<div class="avatar" style="background:#f03e3e;">A</div>
+{% endblock %}
+
+{% block sidebar %}
+<a href="/admin/dashboard" class="nav-link active">
+    <span class="nav-icon">🏠</span>
+    <span>Dashboard</span>
+</a>
+<a href="/admin/add_student" class="nav-link">
+    <span class="nav-icon">👤</span>
+    <span>Add Student</span>
+</a>
+<a href="/admin/add_professor" class="nav-link">
+    <span class="nav-icon">👨‍🏫</span>
+    <span>Add Professor</span>
+</a>
+<a href="/admin/map_subject" class="nav-link">
+    <span class="nav-icon">🗺️</span>
+    <span>Map Subject</span>
+</a>
+<a href="/admin/logout" class="nav-link nav-link-danger">
+    <span class="nav-icon">🚪</span>
+    <span>Logout</span>
+</a>
+{% endblock %}
+
+{% block content %}
+
+<!-- Stats Row -->
+<div class="admin-stats">
+    <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(79,70,229,0.1); color:var(--accent);">👤</div>
+        <div class="stat-info">
+            <span class="stat-number">{{ total_students }}</span>
+            <span class="stat-label">Total Students</span>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(12,166,120,0.1); color:#0ca678;">👨‍🏫</div>
+        <div class="stat-info">
+            <span class="stat-number">{{ total_professors }}</span>
+            <span class="stat-label">Total Professors</span>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(245,159,0,0.1); color:#f59f00;">📚</div>
+        <div class="stat-info">
+            <span class="stat-number">{{ total_subjects }}</span>
+            <span class="stat-label">Total Subjects</span>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(240,62,62,0.1); color:#f03e3e;">🗺️</div>
+        <div class="stat-info">
+            <span class="stat-number">{{ total_assignments }}</span>
+            <span class="stat-label">Assignments</span>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="admin-section-title">Quick Actions</div>
+<div class="subject-list-wrapper">
+
+    <div class="subject-row" onclick="window.location.href='/admin/add_student'">
+        <div class="subject-row-left">
+            <div class="subject-row-name">👤 Add Student</div>
+            <div class="subject-row-meta">Register a new student and enroll into branch and semester</div>
+        </div>
+        <div class="subject-row-right">
+            <button class="action-btn">Go →</button>
+        </div>
+    </div>
+
+    <div class="subject-row" onclick="window.location.href='/admin/add_professor'">
+        <div class="subject-row-left">
+            <div class="subject-row-name">👨‍🏫 Add Professor</div>
+            <div class="subject-row-meta">Register a new professor with login credentials</div>
+        </div>
+        <div class="subject-row-right">
+            <button class="action-btn">Go →</button>
+        </div>
+    </div>
+
+    <div class="subject-row" onclick="window.location.href='/admin/map_subject'">
+        <div class="subject-row-left">
+            <div class="subject-row-name">🗺️ Map Subject to Professor</div>
+            <div class="subject-row-meta">Assign a subject, branch and semester to a professor</div>
+        </div>
+        <div class="subject-row-right">
+            <button class="action-btn">Go →</button>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

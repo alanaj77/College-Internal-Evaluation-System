@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Admin Login{% endblock %}
+
+{% block sidebar %}{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="card">
+        <div style="text-align:center; margin-bottom: 24px;">
+            <div style="width:56px; height:56px; background:var(--accent); border-radius:14px;
+                        display:inline-flex; align-items:center; justify-content:center;
+                        font-size:24px; margin-bottom:12px;">🛡️</div>
+            <h2>Admin Portal</h2>
+            <p class="login-subtitle">Internal Evaluation Management System</p>
+        </div>
+
+        {% if error %}
+        <p style="color:var(--danger); text-align:center; margin-bottom:14px; font-size:13px;">
+            {{ error }}
+        </p>
+        {% endif %}
+
+        <form method="POST" action="/admin/login">
+            <label>Admin ID</label>
+            <input type="text" name="admin_id" placeholder="Enter admin ID" required>
+            <label>Password</label>
+            <input type="password" name="password" placeholder="Enter password" required>
+            <button type="submit">Login to Admin Panel</button>
+        </form>
+
+        <div style="text-align:center; margin-top:16px;">
+            <a href="/login" style="font-size:13px; color:var(--text-secondary); text-decoration:none;">
+                ← Back to main login
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
