@@ -16,7 +16,7 @@ def login():
         cursor = conn.cursor(dictionary=True)
 
         cursor.execute(
-          cursor.execute(
+        cursor.execute(
     "SELECT p_id, name, password_hash FROM professor WHERE email=%s",
     (email,)
 )
