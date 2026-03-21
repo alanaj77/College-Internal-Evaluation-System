@@ -64,6 +64,58 @@ def dashboard():
             cursor.close()
             conn.close()
 
+@admin.route('/admin/add_student', methods=['GET', 'POST'])
+def add_student():
+    if session.get('role') != 'admin':
+        return redirect(url_for('admin.login'))
+
+    error = None
+    success = None
+
+    if request.method == 'POST':
+        adm_no         = request.form.get('adm_no')
+        admission_year = request.form.get('admission_year')
+        name           = request.form.get('name')
+        gender         = request.form.get('gender')
+        dob            = request.form.get('dob')
+        email_id       = request.form.get('email_id')
+        status         = request.form.get('status')
+        form_type      = request.form.get('form')
+        address        = request.form.get('address')
+        branch_id      = request.form.get('branch_id')
+        sem_number     = request.form.get('sem_number')
+        roll_number    = request.form.get('roll_number')
+        reg_number     = request.form.get('reg_number')
+
+        conn   = get_connection()
+        cursor = conn.cursor()
+        try:
+            # Insert into student_details
+            cursor.execute("""
+                INSERT INTO student_details
+                (adm_no, admission_year, name, gender, status, form, dob, email_id, address)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (adm_no, admission_year, name, gender,
+                  status, form_type, dob, email_id, address))
+
+            # Insert into student_class
+            cursor.execute("""
+                INSERT INTO student_class
+                (adm_no, branch_id, sem_number, roll_number, reg_number)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (adm_no, branch_id, sem_number, roll_number, reg_number))
+
+            conn.commit()
+            success = f"Student {name} ({adm_no}) added and enrolled successfully."
+
+        except Error as e:
+            conn.rollback()
+            error = f"Error: {e}"
+        finally:
+            cursor.close()
+            conn.close()
+
+    return render_template('admin/add_student.html', error=error, success=success)
 
 @admin.route("/admin/logout") # <-- Added missing leading slash
 def logout():
