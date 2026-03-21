@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block title %}Add Student{% endblock %}
+{% block topbar_title %}Add Student{% endblock %}
+
+{% block topbar_right %}
+<span class="topbar-welcome">Administrator</span>
+<div class="avatar" style="background:#f03e3e;">A</div>
+{% endblock %}
+
+{% block sidebar %}
+<a href="/admin/dashboard" class="nav-link">
+    <span class="nav-icon">🏠</span>
+    <span>Dashboard</span>
+</a>
+<a href="/admin/add_student" class="nav-link active">
+    <span class="nav-icon">👤</span>
+    <span>Add Student</span>
+</a>
+<a href="/admin/add_professor" class="nav-link">
+    <span class="nav-icon">👨‍🏫</span>
+    <span>Add Professor</span>
+</a>
+<a href="/admin/map_subject" class="nav-link">
+    <span class="nav-icon">🗺️</span>
+    <span>Map Subject</span>
+</a>
+<a href="/admin/logout" class="nav-link nav-link-danger">
+    <span class="nav-icon">🚪</span>
+    <span>Logout</span>
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="admin-form-wrapper">
+
+    <div class="admin-form-header">
+        <h1>Add New Student</h1>
+        <p class="marks-subtitle">Fill in all details to register and enroll the student</p>
+    </div>
+
+    {% if error %}
+    <div class="form-alert form-alert-error">{{ error }}</div>
+    {% endif %}
+    {% if success %}
+    <div class="form-alert form-alert-success">{{ success }}</div>
+    {% endif %}
+
+    <form method="POST" class="admin-form">
+
+        <!-- SECTION 1: student_details -->
+        <div class="form-section">
+            <div class="form-section-title">Student Details</div>
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Admission Number</label>
+                    <input type="text" name="adm_no"
+                           placeholder="e.g. ADM2024001" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Admission Year</label>
+                    <input type="text" name="admission_year"
+                           placeholder="e.g. 2024" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" name="name"
+                           placeholder="Full name" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Gender</label>
+                    <select name="gender">
+                        <option value="">-- Select --</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Date of Birth</label>
+                    <input type="date" name="dob" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Email ID</label>
+                    <input type="email" name="email_id"
+                           placeholder="student@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label>Status</label>
+                    <select name="status">
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Form</label>
+                    <input type="text" name="form"
+                           placeholder="e.g. Regular">
+                </div>
+
+                <div class="form-group form-group-full">
+                    <label>Address</label>
+                    <textarea name="address" rows="3"
+                              placeholder="Full address"></textarea>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- SECTION 2: student_class -->
+        <div class="form-section">
+            <div class="form-section-title">Enrollment Details</div>
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Branch</label>
+                    <input type="text" name="branch_id"
+                           placeholder="e.g. CSE" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Semester</label>
+                    <input type="number" name="sem_number"
+                           min="1" max="8"
+                           placeholder="1 to 8" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Roll Number</label>
+                    <input type="number" name="roll_number"
+                           placeholder="e.g. 42">
+                </div>
+
+                <div class="form-group">
+                    <label>Register Number</label>
+                    <input type="text" name="reg_number"
+                           placeholder="e.g. REG2024001">
+                </div>
+
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <a href="/admin/dashboard" class="btn-secondary">Cancel</a>
+            <button type="submit" class="btn-primary">Add Student</button>
+        </div>
+
+    </form>
+</div>
+{% endblock %}
