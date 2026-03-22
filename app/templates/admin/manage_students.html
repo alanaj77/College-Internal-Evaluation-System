@@ -3,6 +3,29 @@
 {% block title %}Manage Students{% endblock %}
 {% block topbar_title %}Manage Students{% endblock %}
 
+{% block sidebar %}
+<a href="/admin/dashboard" class="nav-link">
+    <span class="nav-icon">🏠</span>
+    <span>Dashboard</span>
+</a>
+<a href="/admin/students" class="nav-link active">
+    <span class="nav-icon">👨‍🎓</span>
+    <span>Manage Students</span>
+</a>
+<a href="/admin/professors" class="nav-link">
+    <span class="nav-icon">👨‍🏫</span>
+    <span>Manage Professors</span>
+</a>
+<a href="/admin/subjects" class="nav-link">
+    <span class="nav-icon">🗺️</span>
+    <span>Manage Subjects</span>
+</a>
+<a href="/admin/logout" class="nav-link nav-link-danger">
+    <span class="nav-icon">🚪</span>
+    <span>Logout</span>
+</a>
+{% endblock %}
+
 {% block content %}
 <style>
     /* Modal sizing to fit all the new fields */
@@ -19,38 +42,47 @@
 </style>
 
 <div class="admin-section-title" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-    <span>Student Directory</span>
-    <button class="action-btn" onclick="window.location.href='/admin/add_student'">+ Add Student</button>
+    <span style="font-size: 22px; font-weight: bold;">Student Directory</span>
+    <button class="action-btn" onclick="window.location.href='/admin/add_student'" 
+            style="padding: 12px 24px; font-size: 15px; font-weight: bold; border-radius: 8px; box-shadow: 0 4px 12px rgba(59, 91, 219, 0.3); transition: transform 0.2s;">
+        + Add New Student
+    </button>
 </div>
 
-<div class="card" style="margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 15px; padding: 15px; align-items: center;">
+<div style="background: var(--bg-card, #ffffff); padding: 12px 16px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: flex; gap: 12px; align-items: center; flex-wrap: wrap; border: 1px solid var(--border, #e5e7eb);">
     
-    <input type="text" id="search-input" placeholder="Search by Name, Roll No, Reg No..." 
-           style="flex: 1; min-width: 250px; padding: 10px; border-radius: 6px; border: 1px solid var(--border);">
+    <div style="flex: 2; min-width: 250px;">
+        <input type="text" id="search-input" placeholder="Search by Name, Roll No, Reg No..." 
+               style="width: 100%; padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border, #d1d5db); background: var(--bg-body, #f3f4f6); box-sizing: border-box;" onkeyup="if(event.key === 'Enter') applyFilters()">
+    </div>
     
-    <select id="branch-filter" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); min-width: 150px;">
-        <option value="">All Branches</option>
-        <option value="CSE">CSE</option>
-        <option value="ECE">ECE</option>
-        <option value="ME">ME</option>
-        <option value="EEE">EEE</option>
-        <option value="CE">CE</option>
-    </select>
+    <div style="flex: 1; min-width: 140px;">
+        <select id="branch-filter" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border, #d1d5db); background: var(--bg-body, #f3f4f6); cursor: pointer;" onchange="applyFilters()">
+            <option value="">All Branches</option>
+            <option value="CSE">CSE</option>
+            <option value="ECE">ECE</option>
+            <option value="MECH">MECH</option>
+        </select>
+    </div>
     
-    <select id="sem-filter" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); min-width: 150px;">
-        <option value="">All Semesters</option>
-        <option value="1">Semester 1</option>
-        <option value="2">Semester 2</option>
-        <option value="3">Semester 3</option>
-        <option value="4">Semester 4</option>
-        <option value="5">Semester 5</option>
-        <option value="6">Semester 6</option>
-        <option value="7">Semester 7</option>
-        <option value="8">Semester 8</option>
-    </select>
-    
-    <button type="button" class="action-btn" onclick="applyFilters()" style="padding: 10px 20px;">Filter</button>
-    <button type="button" class="action-btn" onclick="clearFilters()" style="padding: 10px 20px; background: var(--text-secondary); border-color: var(--text-secondary);">Clear</button>
+    <div style="flex: 1; min-width: 140px;">
+        <select id="sem-filter" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border, #d1d5db); background: var(--bg-body, #f3f4f6); cursor: pointer;" onchange="applyFilters()">
+            <option value="">All Semesters</option>
+            <option value="1">Semester 1</option>
+            <option value="2">Semester 2</option>
+            <option value="3">Semester 3</option>
+            <option value="4">Semester 4</option>
+            <option value="5">Semester 5</option>
+            <option value="6">Semester 6</option>
+            <option value="7">Semester 7</option>
+            <option value="8">Semester 8</option>
+        </select>
+    </div>
+
+    <div style="display: flex; gap: 8px;">
+        <button type="button" onclick="applyFilters()" style="padding: 10px 16px; background: var(--primary-color, #3b5bdb); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">Filter</button>
+        <button type="button" onclick="clearFilters()" style="padding: 10px 16px; background: #e5e7eb; color: #4b5563; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">Clear</button>
+    </div>
 </div>
 
 <div class="table-container">
@@ -91,7 +123,7 @@
     <div class="modal-card">
         <div class="modal-header">
             <h3 style="margin: 0;">Comprehensive Student Details</h3>
-            <button class="close-btn" onclick="closeModal()">✖</button>
+            <button type="button" class="close-btn" onclick="closeModal(event)">✖</button>
         </div>
         
         <form id="updateForm" method="POST" action="/admin/update_student">
@@ -136,8 +168,7 @@
         const rows = document.querySelectorAll('#student-table-body tr');
         
         rows.forEach(row => {
-            // Combine fields to search across them easily
-            const searchData = (row.dataset.name + " " + row.dataset.adm + " " + row.dataset.reg).toLowerCase();
+            const searchData = (row.dataset.name + " " + row.dataset.adm + " " + row.dataset.reg + " " + row.dataset.roll).toLowerCase();
             const branch = (row.dataset.branch || "").toLowerCase();
             const sem = row.dataset.sem || "";
 
@@ -145,7 +176,6 @@
             const matchesBranch = (branchVal === "" || branch === branchVal);
             const matchesSem = (semVal === "" || sem === semVal);
 
-            // Hide or show row based on conditions
             if (matchesSearch && matchesBranch && matchesSem) {
                 row.style.display = "";
             } else {
@@ -154,7 +184,14 @@
         });
     }
 
-    // 2. MODAL POPULATION LOGIC (Pulls from the HTML data-attributes)
+    function clearFilters() {
+        document.getElementById('search-input').value = "";
+        document.getElementById('branch-filter').value = "";
+        document.getElementById('sem-filter').value = "";
+        applyFilters(); // Re-run to show all rows
+    }
+
+    // 2. MODAL POPULATION LOGIC 
     function openModal(row) {
         document.getElementById('mod_adm_no').value = row.dataset.adm;
         document.getElementById('mod_reg').value = row.dataset.reg !== "None" ? row.dataset.reg : "";
@@ -174,14 +211,21 @@
         document.getElementById('studentModal').style.display = 'flex';
     }
 
-    function closeModal() { document.getElementById('studentModal').style.display = 'none'; }
+    function closeModal(event) { 
+        if(event) event.preventDefault(); 
+        document.getElementById('studentModal').style.display = 'none'; 
+    }
+
     function confirmDelete() {
         if (confirm(`WARNING: Delete ${document.getElementById('mod_name').value}? This cannot be undone.`)) {
             document.getElementById('deleteForm').submit();
         }
     }
+
     window.onclick = function(event) {
-        if (event.target == document.getElementById('studentModal')) { closeModal(); }
+        if (event.target == document.getElementById('studentModal')) { 
+            closeModal(event); 
+        }
     }
 </script>
 {% endblock %}
