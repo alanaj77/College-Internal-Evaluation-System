@@ -5,24 +5,17 @@
 
 {% block content %}
 <style>
-    /* MODAL STYLES */
-    .modal-overlay {
-        display: none; 
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0, 0, 0, 0.5); z-index: 1000;
-        align-items: center; justify-content: center;
-    }
-    .modal-card {
-        background: var(--bg-card); width: 100%; max-width: 500px;
-        border-radius: 12px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        position: relative;
-    }
-    .modal-header {
-        display: flex; justify-content: space-between; align-items: center;
-        border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px;
-    }
+    /* Modal sizing to fit all the new fields */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 1000; align-items: center; justify-content: center; }
+    .modal-card { background: var(--bg-card); width: 100%; max-width: 800px; max-height: 90vh; overflow-y: auto; border-radius: 12px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
     .close-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-secondary); }
-    .close-btn:hover { color: var(--danger); }
+    
+    /* 2-Column Grid for the massive form */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+    .full-width { grid-column: 1 / -1; }
+    .form-group label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 13px; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; }
 </style>
 
 <div class="admin-section-title" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -31,37 +24,50 @@
 </div>
 
 <div class="card" style="margin-bottom: 20px; display: flex; gap: 15px; padding: 15px;">
-    <input type="text" placeholder="Search by Name or Roll No..." style="flex: 1; padding: 8px; border-radius: 6px; border: 1px solid var(--border);">
-    <select style="padding: 8px; border-radius: 6px; border: 1px solid var(--border);">
+    <input type="text" id="search-input" placeholder="Search by Name, Roll No, Reg No..." style="flex: 1; padding: 8px; border-radius: 6px; border: 1px solid var(--border);" onkeyup="applyFilters()">
+    <select id="branch-filter" style="padding: 8px; border-radius: 6px; border: 1px solid var(--border);" onchange="applyFilters()">
         <option value="">All Branches</option>
         <option value="CSE">CSE</option>
         <option value="ECE">ECE</option>
+        <option value="MECH">MECH</option>
     </select>
-    <select style="padding: 8px; border-radius: 6px; border: 1px solid var(--border);">
+    <select id="sem-filter" style="padding: 8px; border-radius: 6px; border: 1px solid var(--border);" onchange="applyFilters()">
         <option value="">All Semesters</option>
         <option value="1">Semester 1</option>
         <option value="2">Semester 2</option>
+        <option value="3">Semester 3</option>
+        <option value="4">Semester 4</option>
     </select>
-    <button class="action-btn" style="background: var(--text-secondary);">Filter</button>
 </div>
 
 <div class="table-container">
     <table class="marks-table">
         <thead>
             <tr>
-                <th>Roll No</th>
+                <th>Admin No</th>
                 <th>Name</th>
                 <th>Branch</th>
                 <th>Semester</th>
+                <th>Status</th>
             </tr>
         </thead>
-        <tbody>
-            {% for student in students %}
-            <tr onclick="openModal('{{ student.adm_no }}', '{{ student.name }}', '{{ student.branch_id }}', '{{ student.sem_number }}')" style="cursor: pointer;">
-                <td>{{ student.adm_no }}</td>
-                <td style="font-weight: 600;">{{ student.name }}</td>
-                <td>{{ student.branch_id or '-' }}</td>
-                <td>{{ student.sem_number or '-' }}</td>
+        <tbody id="student-table-body">
+            {% for s in students %}
+            <tr data-adm="{{ s.adm_no }}" data-name="{{ s.name }}" data-branch="{{ s.branch_id }}" data-sem="{{ s.sem_number }}" 
+                data-admyear="{{ s.admission_year }}" data-gender="{{ s.gender }}" data-status="{{ s.status }}" 
+                data-form="{{ s.form }}" data-dob="{{ s.dob }}" data-email="{{ s.email_id }}" data-address="{{ s.address }}"
+                data-roll="{{ s.roll_number }}" data-reg="{{ s.reg_number }}"
+                onclick="openModal(this)" style="cursor: pointer;">
+                
+                <td>{{ s.adm_no }}</td>
+                <td style="font-weight: 600;">{{ s.name }}</td>
+                <td>{{ s.branch_id or '-' }}</td>
+                <td>{{ s.sem_number or '-' }}</td>
+                <td>
+                    <span style="padding: 4px 8px; border-radius: 12px; font-size: 12px; background: {% if s.status == 'Active' %}#d1fae5; color: #065f46;{% else %}#fee2e2; color: #991b1b;{% endif %}">
+                        {{ s.status or 'Unknown' }}
+                    </span>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
@@ -71,26 +77,33 @@
 <div class="modal-overlay" id="studentModal">
     <div class="modal-card">
         <div class="modal-header">
-            <h3 style="margin: 0;">Student Details</h3>
+            <h3 style="margin: 0;">Comprehensive Student Details</h3>
             <button class="close-btn" onclick="closeModal()">✖</button>
         </div>
         
         <form id="updateForm" method="POST" action="/admin/update_student">
-            <label style="display:block; margin-bottom: 5px; font-weight: 600;">Roll Number (Admin No)</label>
-            <input type="text" id="mod_adm_no" name="adm_no" readonly style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-body);">
-
-            <label style="display:block; margin-bottom: 5px; font-weight: 600;">Full Name</label>
-            <input type="text" id="mod_name" name="name" required style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid var(--border); border-radius: 6px;">
-
-            <label style="display:block; margin-bottom: 5px; font-weight: 600;">Branch ID</label>
-            <input type="text" id="mod_branch" name="branch_id" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid var(--border); border-radius: 6px;">
-
-            <label style="display:block; margin-bottom: 5px; font-weight: 600;">Semester</label>
-            <input type="number" id="mod_sem" name="sem_number" min="1" max="8" style="width: 100%; padding: 10px; margin-bottom: 25px; border: 1px solid var(--border); border-radius: 6px;">
+            <div class="form-grid">
+                <div class="form-group"><label>Admin No (Primary Key)</label><input type="text" id="mod_adm_no" name="adm_no" readonly style="background: var(--bg-body);"></div>
+                <div class="form-group"><label>University Reg. Number</label><input type="text" id="mod_reg" name="reg_number"></div>
+                <div class="form-group"><label>Class Roll Number</label><input type="number" id="mod_roll" name="roll_number"></div>
+                <div class="form-group"><label>Admission Year</label><input type="text" id="mod_admyear" name="admission_year"></div>
+                
+                <div class="form-group full-width"><label>Full Name</label><input type="text" id="mod_name" name="name" required></div>
+                <div class="form-group"><label>Email Address</label><input type="email" id="mod_email" name="email_id"></div>
+                <div class="form-group"><label>Date of Birth</label><input type="date" id="mod_dob" name="dob"></div>
+                <div class="form-group"><label>Gender</label><input type="text" id="mod_gender" name="gender"></div>
+                <div class="form-group"><label>Status (e.g., Active)</label><input type="text" id="mod_status" name="status"></div>
+                
+                <div class="form-group"><label>Branch ID</label><input type="text" id="mod_branch" name="branch_id"></div>
+                <div class="form-group"><label>Semester</label><input type="number" id="mod_sem" name="sem_number"></div>
+                <div class="form-group"><label>Form / Quota</label><input type="text" id="mod_form" name="form"></div>
+                
+                <div class="form-group full-width"><label>Address</label><textarea id="mod_address" name="address" rows="2"></textarea></div>
+            </div>
 
             <div style="display: flex; gap: 10px;">
-                <button type="submit" class="action-btn" style="flex: 1; background: #0ca678; border-color: #0ca678;">Update Details</button>
-                <button type="button" class="action-btn" style="background: #f03e3e; border-color: #f03e3e;" onclick="confirmDelete()">Delete</button>
+                <button type="submit" class="action-btn" style="flex: 1; background: #0ca678; border-color: #0ca678;">Save All Updates</button>
+                <button type="button" class="action-btn" style="background: #f03e3e; border-color: #f03e3e;" onclick="confirmDelete()">Delete Record</button>
             </div>
         </form>
 
@@ -101,40 +114,61 @@
 </div>
 
 <script>
-    // Open the modal and populate the data
-    function openModal(adm_no, name, branch, sem) {
-        document.getElementById('mod_adm_no').value = adm_no;
-        document.getElementById('mod_name').value = name;
-        document.getElementById('mod_branch').value = branch;
-        document.getElementById('mod_sem').value = sem;
+    // 1. DYNAMIC FILTERING LOGIC
+    function applyFilters() {
+        const searchTxt = document.getElementById('search-input').value.toLowerCase();
+        const branchVal = document.getElementById('branch-filter').value.toLowerCase();
+        const semVal = document.getElementById('sem-filter').value;
         
-        // Populate the hidden delete form just in case they click delete
-        document.getElementById('del_adm_no').value = adm_no;
+        const rows = document.querySelectorAll('#student-table-body tr');
+        
+        rows.forEach(row => {
+            // Combine fields to search across them easily
+            const searchData = (row.dataset.name + " " + row.dataset.adm + " " + row.dataset.reg).toLowerCase();
+            const branch = (row.dataset.branch || "").toLowerCase();
+            const sem = row.dataset.sem || "";
 
+            const matchesSearch = searchData.includes(searchTxt);
+            const matchesBranch = (branchVal === "" || branch === branchVal);
+            const matchesSem = (semVal === "" || sem === semVal);
+
+            // Hide or show row based on conditions
+            if (matchesSearch && matchesBranch && matchesSem) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    }
+
+    // 2. MODAL POPULATION LOGIC (Pulls from the HTML data-attributes)
+    function openModal(row) {
+        document.getElementById('mod_adm_no').value = row.dataset.adm;
+        document.getElementById('mod_reg').value = row.dataset.reg !== "None" ? row.dataset.reg : "";
+        document.getElementById('mod_roll').value = row.dataset.roll !== "None" ? row.dataset.roll : "";
+        document.getElementById('mod_admyear').value = row.dataset.admyear !== "None" ? row.dataset.admyear : "";
+        document.getElementById('mod_name').value = row.dataset.name;
+        document.getElementById('mod_email').value = row.dataset.email !== "None" ? row.dataset.email : "";
+        document.getElementById('mod_dob').value = row.dataset.dob !== "None" ? row.dataset.dob : "";
+        document.getElementById('mod_gender').value = row.dataset.gender !== "None" ? row.dataset.gender : "";
+        document.getElementById('mod_status').value = row.dataset.status !== "None" ? row.dataset.status : "";
+        document.getElementById('mod_branch').value = row.dataset.branch !== "None" ? row.dataset.branch : "";
+        document.getElementById('mod_sem').value = row.dataset.sem !== "None" ? row.dataset.sem : "";
+        document.getElementById('mod_form').value = row.dataset.form !== "None" ? row.dataset.form : "";
+        document.getElementById('mod_address').value = row.dataset.address !== "None" ? row.dataset.address : "";
+        
+        document.getElementById('del_adm_no').value = row.dataset.adm;
         document.getElementById('studentModal').style.display = 'flex';
     }
 
-    // Close the modal
-    function closeModal() {
-        document.getElementById('studentModal').style.display = 'none';
-    }
-
-    // Handle the Delete Warning
+    function closeModal() { document.getElementById('studentModal').style.display = 'none'; }
     function confirmDelete() {
-        const name = document.getElementById('mod_name').value;
-        const adm = document.getElementById('mod_adm_no').value;
-        
-        if (confirm(`WARNING: Are you sure you want to delete ${name} (${adm})? This cannot be undone.`)) {
+        if (confirm(`WARNING: Delete ${document.getElementById('mod_name').value}? This cannot be undone.`)) {
             document.getElementById('deleteForm').submit();
         }
     }
-
-    // Close modal if user clicks outside the card
     window.onclick = function(event) {
-        let modal = document.getElementById('studentModal');
-        if (event.target == modal) {
-            closeModal();
-        }
+        if (event.target == document.getElementById('studentModal')) { closeModal(); }
     }
 </script>
 {% endblock %}
