@@ -58,7 +58,8 @@
     
     <div style="flex: 2; min-width: 250px;">
         <input type="text" id="search-input" placeholder="Search by Name, Roll No, Reg No..." 
-               style="width: 100%; padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border, #d1d5db); background: var(--bg-body, #f3f4f6); box-sizing: border-box;" onkeyup="if(event.key === 'Enter') applyFilters()">
+               style="width: 100%; padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border, #d1d5db); background: var(--bg-body, #f3f4f6); box-sizing: border-box;" 
+               oninput="applyFilters()">
     </div>
     
     <div style="flex: 1; min-width: 140px;">
@@ -87,8 +88,7 @@
     </div>
 
     <div style="display: flex; gap: 8px;">
-        <button type="button" onclick="applyFilters()" style="padding: 10px 16px; background: var(--primary-color, #3b5bdb); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">Filter</button>
-        <button type="button" onclick="clearFilters()" style="padding: 10px 16px; background: #e5e7eb; color: #4b5563; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">Clear</button>
+        <button type="button" onclick="clearFilters()" style="padding: 10px 16px; background: #e5e7eb; color: #4b5563; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background 0.2s;">Clear</button>
     </div>
 </div>
 
