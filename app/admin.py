@@ -216,7 +216,6 @@ def logout():
 
 @admin.route("/admin/students")
 def manage_students():
-    """Renders the main student list with the modal"""
     if session.get('role') != 'admin':
         return redirect(url_for("admin.login"))
 
@@ -226,9 +225,11 @@ def manage_students():
 
     try:
         cursor = conn.cursor(dictionary=True)
-        # Fetch all students and their branch/sem data
+        # 1. UPDATED SQL: Fetching ALL attributes from both tables
         sql = """
-            SELECT sd.adm_no, sd.name, sc.branch_id, sc.sem_number 
+            SELECT sd.adm_no, sd.admission_year, sd.name, sd.gender, sd.status, 
+                   sd.form, sd.dob, sd.email_id, sd.address,
+                   sc.branch_id, sc.sem_number, sc.roll_number, sc.reg_number
             FROM student_details sd
             LEFT JOIN student_class sc ON sd.adm_no = sc.adm_no
             ORDER BY sd.adm_no ASC
@@ -237,7 +238,6 @@ def manage_students():
         students = cursor.fetchall()
 
         return render_template("admin/manage_students.html", students=students)
-        
     except Error as e:
         print(f"Error: {e}")
         return "Error loading students", 500
@@ -249,26 +249,43 @@ def manage_students():
 
 @admin.route('/admin/update_student', methods=['POST'])
 def update_student():
-    """Handles the 'Update Details' button inside the Modal"""
     if session.get('role') != 'admin':
         return redirect(url_for('admin.login'))
 
-    adm_no = request.form.get('adm_no')
-    name = request.form.get('name')
-    branch_id = request.form.get('branch_id')
-    sem_number = request.form.get('sem_number')
+    # Grab ALL fields from the modal form
+    adm_no         = request.form.get('adm_no')
+    admission_year = request.form.get('admission_year')
+    name           = request.form.get('name')
+    gender         = request.form.get('gender')
+    dob            = request.form.get('dob')
+    email_id       = request.form.get('email_id')
+    status         = request.form.get('status')
+    form_type      = request.form.get('form')
+    address        = request.form.get('address')
+    
+    branch_id      = request.form.get('branch_id')
+    sem_number     = request.form.get('sem_number')
+    roll_number    = request.form.get('roll_number')
+    reg_number     = request.form.get('reg_number')
 
     conn = get_connection()
     try:
         cursor = conn.cursor()
         
-        # 1. Update the student's name
-        cursor.execute("UPDATE student_details SET name = %s WHERE adm_no = %s", (name, adm_no))
-        
-        # 2. Update their class/semester details
+        # 2. UPDATED SQL: Update all fields in student_details
         cursor.execute("""
-            UPDATE student_class SET branch_id = %s, sem_number = %s WHERE adm_no = %s
-        """, (branch_id, sem_number, adm_no))
+            UPDATE student_details 
+            SET admission_year=%s, name=%s, gender=%s, dob=%s, 
+                email_id=%s, status=%s, form=%s, address=%s 
+            WHERE adm_no=%s
+        """, (admission_year, name, gender, dob, email_id, status, form_type, address, adm_no))
+        
+        # 3. UPDATED SQL: Update all fields in student_class
+        cursor.execute("""
+            UPDATE student_class 
+            SET branch_id=%s, sem_number=%s, roll_number=%s, reg_number=%s 
+            WHERE adm_no=%s
+        """, (branch_id, sem_number, roll_number, reg_number, adm_no))
         
         conn.commit()
     except Error as e:
@@ -279,9 +296,7 @@ def update_student():
             cursor.close()
             conn.close()
             
-    # Refresh the page to show the updated data!
     return redirect('/admin/students')
-
 
 @admin.route('/admin/delete_student', methods=['POST'])
 def delete_student():
