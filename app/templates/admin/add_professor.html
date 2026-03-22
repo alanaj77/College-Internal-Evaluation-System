@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}Add Professor{% endblock %}
+{% block topbar_title %}Add Professor{% endblock %}
+
+{% block topbar_right %}
+<span class="topbar-welcome">Administrator</span>
+<div class="avatar" style="background:#f03e3e;">A</div>
+{% endblock %}
+
+{% block sidebar %}
+<a href="/admin/dashboard" class="nav-link">
+    <span class="nav-icon">🏠</span>
+    <span>Dashboard</span>
+</a>
+<a href="/admin/add_student" class="nav-link">
+    <span class="nav-icon">👤</span>
+    <span>Add Student</span>
+</a>
+<a href="/admin/add_professor" class="nav-link active">
+    <span class="nav-icon">👨‍🏫</span>
+    <span>Add Professor</span>
+</a>
+<a href="/admin/map_subject" class="nav-link">
+    <span class="nav-icon">🗺️</span>
+    <span>Map Subject</span>
+</a>
+<a href="/admin/logout" class="nav-link nav-link-danger">
+    <span class="nav-icon">🚪</span>
+    <span>Logout</span>
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="admin-form-wrapper">
+
+    <div class="admin-form-header">
+        <h1>Add New Professor</h1>
+        <p class="marks-subtitle">Fill in all details to register a professor account</p>
+    </div>
+
+    {% if error %}
+    <div class="form-alert form-alert-error">{{ error }}</div>
+    {% endif %}
+    {% if success %}
+    <div class="form-alert form-alert-success">{{ success }}</div>
+    {% endif %}
+
+    <form method="POST" class="admin-form">
+        <div class="form-section">
+            <div class="form-section-title">Professor Details</div>
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" name="name"
+                           placeholder="e.g. Dr. John Smith" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="email"
+                           placeholder="professor@college.edu" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="text" name="phone"
+                           placeholder="e.g. 9876543210">
+                </div>
+
+                <div class="form-group">
+                    <label>Designation</label>
+                    <select name="designation">
+                        <option value="">-- Select --</option>
+                        <option value="Assistant Professor">Assistant Professor</option>
+                        <option value="Associate Professor">Associate Professor</option>
+                        <option value="Professor">Professor</option>
+                        <option value="Senior Lecturer">Senior Lecturer</option>
+                        <option value="Department Head">Department Head</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Status</label>
+                    <select name="status">
+                        <option value="Active">Active</option>
+                        <option value="On Leave">On Leave</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" name="password"
+                           placeholder="Set login password" required>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <a href="/admin/dashboard" class="btn-secondary">Cancel</a>
+            <button type="submit" class="btn-primary">Add Professor</button>
+        </div>
+
+    </form>
+</div>
+{% endblock %}
