@@ -214,3 +214,102 @@ def logout():
     return redirect(url_for("admin.login"))
 
 
+@admin.route("/admin/students")
+def manage_students():
+    """Renders the main student list with the modal"""
+    if session.get('role') != 'admin':
+        return redirect(url_for("admin.login"))
+
+    conn = get_connection()
+    if conn is None:
+        return "Database Connection Failed", 500
+
+    try:
+        cursor = conn.cursor(dictionary=True)
+        # Fetch all students and their branch/sem data
+        sql = """
+            SELECT sd.adm_no, sd.name, sc.branch_id, sc.sem_number 
+            FROM student_details sd
+            LEFT JOIN student_class sc ON sd.adm_no = sc.adm_no
+            ORDER BY sd.adm_no ASC
+        """
+        cursor.execute(sql)
+        students = cursor.fetchall()
+
+        return render_template("admin/manage_students.html", students=students)
+        
+    except Error as e:
+        print(f"Error: {e}")
+        return "Error loading students", 500
+    finally:
+        if conn and conn.is_connected():
+            cursor.close()
+            conn.close()
+
+
+@admin.route('/admin/update_student', methods=['POST'])
+def update_student():
+    """Handles the 'Update Details' button inside the Modal"""
+    if session.get('role') != 'admin':
+        return redirect(url_for('admin.login'))
+
+    adm_no = request.form.get('adm_no')
+    name = request.form.get('name')
+    branch_id = request.form.get('branch_id')
+    sem_number = request.form.get('sem_number')
+
+    conn = get_connection()
+    try:
+        cursor = conn.cursor()
+        
+        # 1. Update the student's name
+        cursor.execute("UPDATE student_details SET name = %s WHERE adm_no = %s", (name, adm_no))
+        
+        # 2. Update their class/semester details
+        cursor.execute("""
+            UPDATE student_class SET branch_id = %s, sem_number = %s WHERE adm_no = %s
+        """, (branch_id, sem_number, adm_no))
+        
+        conn.commit()
+    except Error as e:
+        conn.rollback()
+        print(f"Database Error: {e}")
+    finally:
+        if conn and conn.is_connected():
+            cursor.close()
+            conn.close()
+            
+    # Refresh the page to show the updated data!
+    return redirect('/admin/students')
+
+
+@admin.route('/admin/delete_student', methods=['POST'])
+def delete_student():
+    """Handles the 'Delete' button inside the Modal"""
+    if session.get('role') != 'admin':
+        return redirect(url_for('admin.login'))
+
+    adm_no = request.form.get('adm_no')
+
+    conn = get_connection()
+    try:
+        cursor = conn.cursor()
+        
+        # NOTE: Always delete from child tables (student_class) BEFORE the parent table (student_details)
+        # Otherwise, MySQL will block the deletion due to Foreign Key constraints!
+        cursor.execute("DELETE FROM student_class WHERE adm_no = %s", (adm_no,))
+        cursor.execute("DELETE FROM student_details WHERE adm_no = %s", (adm_no,))
+        
+        conn.commit()
+    except Error as e:
+        conn.rollback()
+        print(f"Database Error: {e}")
+    finally:
+        if conn and conn.is_connected():
+            cursor.close()
+            conn.close()
+            
+    # Refresh the page to show the student is gone!
+    return redirect('/admin/students')
+
+
