@@ -78,6 +78,7 @@ def marks_entry():
         cursor.execute("""
             SELECT
                 sd.adm_no,
+                sc.roll_number,
                 sd.name,
                 cm.assignment_marks,
                 cm.attendance_marks,
@@ -96,14 +97,15 @@ def marks_entry():
               AND ta.p_id = %s
               AND sc.sem_number = %s
               AND ta.t_id = %s
+             ORDER BY sd.name
         """, (sub_code, pid, semno, tid))
 
         students = cursor.fetchall()
-
+        i = 1
         return render_template('marks_entry.html',
                                students=students,
                                subject_name=subject_name,
-                               sub_code=sub_code,prof_name=prof_name)
+                               sub_code=sub_code,prof_name=prof_name,i=i)
     except Error as e:
         print(f"Error: {e}")
         return "Error fetching data", 500
