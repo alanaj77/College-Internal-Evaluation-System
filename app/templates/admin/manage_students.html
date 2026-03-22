@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Students{% endblock %}
+{% block topbar_title %}Manage Students{% endblock %}
+
+{% block content %}
+<style>
+    /* MODAL STYLES */
+    .modal-overlay {
+        display: none; 
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.5); z-index: 1000;
+        align-items: center; justify-content: center;
+    }
+    .modal-card {
+        background: var(--bg-card); width: 100%; max-width: 500px;
+        border-radius: 12px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        position: relative;
+    }
+    .modal-header {
+        display: flex; justify-content: space-between; align-items: center;
+        border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px;
+    }
+    .close-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-secondary); }
+    .close-btn:hover { color: var(--danger); }
+</style>
+
+<div class="admin-section-title" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <span>Student Directory</span>
+    <button class="action-btn" onclick="window.location.href='/admin/add_student'">+ Add Student</button>
+</div>
+
+<div class="card" style="margin-bottom: 20px; display: flex; gap: 15px; padding: 15px;">
+    <input type="text" placeholder="Search by Name or Roll No..." style="flex: 1; padding: 8px; border-radius: 6px; border: 1px solid var(--border);">
+    <select style="padding: 8px; border-radius: 6px; border: 1px solid var(--border);">
+        <option value="">All Branches</option>
+        <option value="CSE">CSE</option>
+        <option value="ECE">ECE</option>
+    </select>
+    <select style="padding: 8px; border-radius: 6px; border: 1px solid var(--border);">
+        <option value="">All Semesters</option>
+        <option value="1">Semester 1</option>
+        <option value="2">Semester 2</option>
+    </select>
+    <button class="action-btn" style="background: var(--text-secondary);">Filter</button>
+</div>
+
+<div class="table-container">
+    <table class="marks-table">
+        <thead>
+            <tr>
+                <th>Roll No</th>
+                <th>Name</th>
+                <th>Branch</th>
+                <th>Semester</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr onclick="openModal('{{ student.adm_no }}', '{{ student.name }}', '{{ student.branch_id }}', '{{ student.sem_number }}')" style="cursor: pointer;">
+                <td>{{ student.adm_no }}</td>
+                <td style="font-weight: 600;">{{ student.name }}</td>
+                <td>{{ student.branch_id or '-' }}</td>
+                <td>{{ student.sem_number or '-' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="modal-overlay" id="studentModal">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3 style="margin: 0;">Student Details</h3>
+            <button class="close-btn" onclick="closeModal()">✖</button>
+        </div>
+        
+        <form id="updateForm" method="POST" action="/admin/update_student">
+            <label style="display:block; margin-bottom: 5px; font-weight: 600;">Roll Number (Admin No)</label>
+            <input type="text" id="mod_adm_no" name="adm_no" readonly style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-body);">
+
+            <label style="display:block; margin-bottom: 5px; font-weight: 600;">Full Name</label>
+            <input type="text" id="mod_name" name="name" required style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid var(--border); border-radius: 6px;">
+
+            <label style="display:block; margin-bottom: 5px; font-weight: 600;">Branch ID</label>
+            <input type="text" id="mod_branch" name="branch_id" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid var(--border); border-radius: 6px;">
+
+            <label style="display:block; margin-bottom: 5px; font-weight: 600;">Semester</label>
+            <input type="number" id="mod_sem" name="sem_number" min="1" max="8" style="width: 100%; padding: 10px; margin-bottom: 25px; border: 1px solid var(--border); border-radius: 6px;">
+
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" class="action-btn" style="flex: 1; background: #0ca678; border-color: #0ca678;">Update Details</button>
+                <button type="button" class="action-btn" style="background: #f03e3e; border-color: #f03e3e;" onclick="confirmDelete()">Delete</button>
+            </div>
+        </form>
+
+        <form id="deleteForm" method="POST" action="/admin/delete_student" style="display: none;">
+            <input type="hidden" id="del_adm_no" name="adm_no">
+        </form>
+    </div>
+</div>
+
+<script>
+    // Open the modal and populate the data
+    function openModal(adm_no, name, branch, sem) {
+        document.getElementById('mod_adm_no').value = adm_no;
+        document.getElementById('mod_name').value = name;
+        document.getElementById('mod_branch').value = branch;
+        document.getElementById('mod_sem').value = sem;
+        
+        // Populate the hidden delete form just in case they click delete
+        document.getElementById('del_adm_no').value = adm_no;
+
+        document.getElementById('studentModal').style.display = 'flex';
+    }
+
+    // Close the modal
+    function closeModal() {
+        document.getElementById('studentModal').style.display = 'none';
+    }
+
+    // Handle the Delete Warning
+    function confirmDelete() {
+        const name = document.getElementById('mod_name').value;
+        const adm = document.getElementById('mod_adm_no').value;
+        
+        if (confirm(`WARNING: Are you sure you want to delete ${name} (${adm})? This cannot be undone.`)) {
+            document.getElementById('deleteForm').submit();
+        }
+    }
+
+    // Close modal if user clicks outside the card
+    window.onclick = function(event) {
+        let modal = document.getElementById('studentModal');
+        if (event.target == modal) {
+            closeModal();
+        }
+    }
+</script>
+{% endblock %}
