@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Add Subject{% endblock %}
+{% block topbar_title %}Add Subject{% endblock %}
+
+{% block topbar_right %}
+<span class="topbar-welcome">Administrator</span>
+<div class="avatar" style="background:#f03e3e;">A</div>
+{% endblock %}
+
+{% block sidebar %}
+<a href="/admin/dashboard" class="nav-link">
+    <span class="nav-icon">🏠</span><span>Dashboard</span>
+</a>
+<a href="/admin/students" class="nav-link">
+    <span class="nav-icon">👤</span><span>Manage Students</span>
+</a>
+<a href="/admin/professors" class="nav-link">
+    <span class="nav-icon">👨‍🏫</span><span>Manage Professors</span>
+</a>
+<a href="/admin/subjects" class="nav-link active">
+    <span class="nav-icon">📚</span><span>Manage Subjects</span>
+</a>
+<a href="/admin/logout" class="nav-link nav-link-danger">
+    <span class="nav-icon">🚪</span><span>Logout</span>
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="admin-form-wrapper">
+
+    <div class="admin-form-header">
+        <h1>Add New Subject</h1>
+        <p class="marks-subtitle">Register a new subject into the system</p>
+    </div>
+
+    {% if error %}
+    <div class="form-alert form-alert-error">{{ error }}</div>
+    {% endif %}
+    {% if success %}
+    <div class="form-alert form-alert-success">{{ success }}</div>
+    {% endif %}
+
+    <form method="POST" class="admin-form">
+        <div class="form-section">
+            <div class="form-section-title">Subject Details</div>
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Subject Code</label>
+                    <input type="text" name="subject_code"
+                           placeholder="e.g. CS101" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Subject Name</label>
+                    <input type="text" name="subject_name"
+                           placeholder="e.g. Data Structures" required>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <a href="/admin/subjects" class="btn-secondary">Cancel</a>
+            <button type="submit" class="btn-primary">Add Subject</button>
+        </div>
+
+    </form>
+</div>
+{% endblock %}
