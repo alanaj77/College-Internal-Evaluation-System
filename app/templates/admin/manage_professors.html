@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+{% block title %}Manage Professors{% endblock %}
+{% block topbar_title %}Manage Professors{% endblock %}
+
+{% block topbar_right %}
+<span class="topbar-welcome">Administrator</span>
+<div class="avatar" style="background:#f03e3e;">A</div>
+{% endblock %}
+
+{% block sidebar %}
+<a href="/admin/dashboard" class="nav-link">
+    <span class="nav-icon">🏠</span><span>Dashboard</span>
+</a>
+<a href="/admin/students" class="nav-link">
+    <span class="nav-icon">👨‍🎓</span><span>Manage Students</span>
+</a>
+<a href="/admin/professors" class="nav-link active">
+    <span class="nav-icon">👨‍🏫</span><span>Manage Professors</span>
+</a>
+<a href="/admin/subjects" class="nav-link">
+    <span class="nav-icon">🗺️</span><span>Manage Subjects</span>
+</a>
+<a href="/admin/logout" class="nav-link nav-link-danger">
+    <span class="nav-icon">🚪</span><span>Logout</span>
+</a>
+{% endblock %}
+
+{% block content %}
+<style>
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; }
+    .modal-card { background: var(--bg-card); width: 100%; max-width: 700px; max-height: 90vh; overflow-y: auto; border-radius: 12px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
+    .close-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-secondary); }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+    .full-width { grid-column: 1 / -1; }
+    .form-group label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 13px; color: var(--text-label); }
+    .form-group input, .form-group select { width: 100%; padding: 10px; border: 1.5px solid var(--border); border-radius: 8px; background: var(--bg-input); color: var(--text-primary); font-family: 'DM Sans', sans-serif; box-sizing: border-box; }
+    .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--accent); background: var(--bg-card); }
+</style>
+
+<!-- Header -->
+<div class="admin-section-title" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <span style="font-size:22px; font-weight:bold;">Professor Directory</span>
+    <button class="action-btn"
+            onclick="window.location.href='/admin/add_professor'"
+            style="padding:12px 24px; font-size:15px; font-weight:bold; border-radius:8px; box-shadow:0 4px 12px rgba(59,91,219,0.3);">
+        + Add New Professor
+    </button>
+</div>
+
+<!-- Search and Filter Bar -->
+<div style="background:var(--bg-card); padding:12px 16px; border-radius:10px; margin-bottom:20px; box-shadow:0 2px 8px rgba(0,0,0,0.05); display:flex; gap:12px; align-items:center; flex-wrap:wrap; border:1px solid var(--border);">
+
+    <div style="flex:2; min-width:250px;">
+        <input type="text" id="search-input"
+               placeholder="Search by Name, Email..."
+               style="width:100%; padding:10px 14px; border-radius:6px; border:1px solid var(--border); background:var(--bg-input); color:var(--text-primary); box-sizing:border-box;"
+               oninput="applyFilters()">
+    </div>
+
+    <div style="flex:1; min-width:160px;">
+        <select id="designation-filter"
+                style="width:100%; padding:10px; border-radius:6px; border:1px solid var(--border); background:var(--bg-input); color:var(--text-primary); cursor:pointer;"
+                onchange="applyFilters()">
+            <option value="">All Designations</option>
+            <option value="Assistant Professor">Assistant Professor</option>
+            <option value="Associate Professor">Associate Professor</option>
+            <option value="Professor">Professor</option>
+            <option value="Senior Lecturer">Senior Lecturer</option>
+            <option value="Department Head">Department Head</option>
+        </select>
+    </div>
+
+    <div style="flex:1; min-width:140px;">
+        <select id="status-filter"
+                style="width:100%; padding:10px; border-radius:6px; border:1px solid var(--border); background:var(--bg-input); color:var(--text-primary); cursor:pointer;"
+                onchange="applyFilters()">
+            <option value="">All Status</option>
+            <option value="Active">Active</option>
+            <option value="On Leave">On Leave</option>
+            <option value="Inactive">Inactive</option>
+        </select>
+    </div>
+
+    <div>
+        <button type="button" onclick="clearFilters()"
+                style="padding:10px 16px; background:#e5e7eb; color:#4b5563; border:none; border-radius:6px; font-weight:600; cursor:pointer;">
+            Clear
+        </button>
+    </div>
+</div>
+
+<!-- Table -->
+<div class="table-container">
+    <table class="marks-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Designation</th>
+                <th>Phone</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="professor-table-body">
+            {% for p in professors %}
+            <tr data-pid="{{ p.p_id }}"
+                data-name="{{ p.name }}"
+                data-email="{{ p.email }}"
+                data-phone="{{ p.phone }}"
+                data-designation="{{ p.designation }}"
+                data-status="{{ p.status }}"
+                onclick="openModal(this)"
+                style="cursor:pointer;">
+                <td style="color:var(--accent); font-weight:700;">{{ p.p_id }}</td>
+                <td style="font-weight:600;">{{ p.name }}</td>
+                <td>{{ p.email or '-' }}</td>
+                <td>{{ p.designation or '-' }}</td>
+                <td>{{ p.phone or '-' }}</td>
+                <td>
+                    <span style="padding:4px 8px; border-radius:12px; font-size:12px;
+                        {% if p.status == 'Active' %}background:#d1fae5; color:#065f46;
+                        {% elif p.status == 'On Leave' %}background:#fef3c7; color:#92400e;
+                        {% else %}background:#fee2e2; color:#991b1b;{% endif %}">
+                        {{ p.status or 'Unknown' }}
+                    </span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="professorModal">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3 style="margin:0;">Professor Details</h3>
+            <button type="button" class="close-btn" onclick="closeModal(event)">✖</button>
+        </div>
+
+        <form id="updateForm" method="POST" action="/admin/update_professor">
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Professor ID</label>
+                    <input type="text" id="mod_pid" name="p_id" readonly
+                           style="background:var(--bg-page);">
+                </div>
+
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="text" id="mod_phone" name="phone"
+                           placeholder="Phone number">
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Full Name</label>
+                    <input type="text" id="mod_name" name="name" required>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Email</label>
+                    <input type="email" id="mod_email" name="email">
+                </div>
+
+                <div class="form-group">
+                    <label>Designation</label>
+                    <select id="mod_designation" name="designation">
+                        <option value="">-- Select --</option>
+                        <option value="Assistant Professor">Assistant Professor</option>
+                        <option value="Associate Professor">Associate Professor</option>
+                        <option value="Professor">Professor</option>
+                        <option value="Senior Lecturer">Senior Lecturer</option>
+                        <option value="Department Head">Department Head</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="mod_status" name="status">
+                        <option value="Active">Active</option>
+                        <option value="On Leave">On Leave</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>New Password <span style="font-weight:400; color:var(--text-muted);">(leave blank to keep current)</span></label>
+                    <input type="password" name="password"
+                           placeholder="Enter new password to change">
+                </div>
+
+            </div>
+
+            <div style="display:flex; gap:10px;">
+                <button type="submit" class="action-btn"
+                        style="flex:1; background:#0ca678; border-color:#0ca678;">
+                    Save Updates
+                </button>
+                <button type="button" class="action-btn"
+                        style="background:#f03e3e; border-color:#f03e3e;"
+                        onclick="confirmDelete()">
+                    Delete Professor
+                </button>
+            </div>
+        </form>
+
+        <form id="deleteForm" method="POST" action="/admin/delete_professor" style="display:none;">
+            <input type="hidden" id="del_pid" name="p_id">
+        </form>
+    </div>
+</div>
+
+<script>
+function applyFilters() {
+    const search      = document.getElementById('search-input').value.toLowerCase();
+    const designation = document.getElementById('designation-filter').value.toLowerCase();
+    const status      = document.getElementById('status-filter').value.toLowerCase();
+
+    document.querySelectorAll('#professor-table-body tr').forEach(row => {
+        const searchData    = (row.dataset.name + ' ' + row.dataset.email).toLowerCase();
+        const rowDesig      = (row.dataset.designation || '').toLowerCase();
+        const rowStatus     = (row.dataset.status || '').toLowerCase();
+
+        const matchSearch   = searchData.includes(search);
+        const matchDesig    = designation === '' || rowDesig === designation;
+        const matchStatus   = status === '' || rowStatus === status;
+
+        row.style.display = (matchSearch && matchDesig && matchStatus) ? '' : 'none';
+    });
+}
+
+function clearFilters() {
+    document.getElementById('search-input').value    = '';
+    document.getElementById('designation-filter').value = '';
+    document.getElementById('status-filter').value   = '';
+    applyFilters();
+}
+
+function openModal(row) {
+    document.getElementById('mod_pid').value         = row.dataset.pid;
+    document.getElementById('mod_name').value        = row.dataset.name;
+    document.getElementById('mod_email').value       = row.dataset.email !== 'None' ? row.dataset.email : '';
+    document.getElementById('mod_phone').value       = row.dataset.phone !== 'None' ? row.dataset.phone : '';
+    document.getElementById('mod_designation').value = row.dataset.designation !== 'None' ? row.dataset.designation : '';
+    document.getElementById('mod_status').value      = row.dataset.status !== 'None' ? row.dataset.status : '';
+    document.getElementById('del_pid').value         = row.dataset.pid;
+    document.getElementById('professorModal').style.display = 'flex';
+}
+
+function closeModal(event) {
+    if (event) event.preventDefault();
+    document.getElementById('professorModal').style.display = 'none';
+}
+
+function confirmDelete() {
+    if (confirm(`WARNING: Delete ${document.getElementById('mod_name').value}? This will also remove all their subject assignments.`)) {
+        document.getElementById('deleteForm').submit();
+    }
+}
+
+window.onclick = function(event) {
+    if (event.target == document.getElementById('professorModal')) {
+        closeModal(event);
+    }
+}
+</script>
+{% endblock %}
