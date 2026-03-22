@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Students{% endblock %}
+{% block topbar_title %}Manage Students{% endblock %}
+
+{% block topbar_right %}
+<span class="topbar-welcome">Administrator</span>
+<div class="avatar" style="background:#f03e3e;">A</div>
+{% endblock %}
+
+{% block sidebar %}
+<a href="/admin/dashboard" class="nav-link">
+    <span class="nav-icon">🏠</span>
+    <span>Dashboard</span>
+</a>
+<a href="/admin/students" class="nav-link active">
+    <span class="nav-icon">👨‍🎓</span>
+    <span>Manage Students</span>
+</a>
+<a href="/admin/professors" class="nav-link">
+    <span class="nav-icon">👨‍🏫</span>
+    <span>Manage Professors</span>
+</a>
+<a href="/admin/subjects" class="nav-link">
+    <span class="nav-icon">🗺️</span>
+    <span>Manage Subjects</span>
+</a>
+<a href="/admin/logout" class="nav-link nav-link-danger">
+    <span class="nav-icon">🚪</span>
+    <span>Logout</span>
+</a>
+{% endblock %}
+
+{% block content %}
+<style>
+    /* Modal sizing to fit all the new fields */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 1000; align-items: center; justify-content: center; }
+    .modal-card { background: var(--bg-card); width: 100%; max-width: 800px; max-height: 90vh; overflow-y: auto; border-radius: 12px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
+    .close-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-secondary); }
+    
+    /* 2-Column Grid for the massive form */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+    .full-width { grid-column: 1 / -1; }
+    .form-group label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 13px; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; }
+</style>
+
+<div class="admin-section-title" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <span style="font-size: 22px; font-weight: bold;">Student Directory</span>
+    <button class="action-btn" onclick="window.location.href='/admin/add_student'" 
+            style="padding: 12px 24px; font-size: 15px; font-weight: bold; border-radius: 8px; box-shadow: 0 4px 12px rgba(59, 91, 219, 0.3); transition: transform 0.2s;">
+        + Add New Student
+    </button>
+</div>
+
+<div style="background: var(--bg-card, #ffffff); padding: 12px 16px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: flex; gap: 12px; align-items: center; flex-wrap: wrap; border: 1px solid var(--border, #e5e7eb);">
+    
+    <div style="flex: 2; min-width: 250px;">
+        <input type="text" id="search-input" placeholder="Search by Name, Roll No, Reg No..." 
+               style="width: 100%; padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border, #d1d5db); background: var(--bg-body, #f3f4f6); box-sizing: border-box;" 
+               oninput="applyFilters()">
+    </div>
+    
+    <div style="flex: 1; min-width: 140px;">
+        <select id="branch-filter" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border, #d1d5db); background: var(--bg-body, #f3f4f6); cursor: pointer;" onchange="applyFilters()">
+            <option value="">All Branches</option>
+            <option value="CSE">CSE</option>
+            <option value="ECE">ECE</option>
+            <option value="EEE">EEE</option>
+            <option value="ME">ME</option>
+            <option value="CE">CE</option>
+        </select>
+    </div>
+    
+    <div style="flex: 1; min-width: 140px;">
+        <select id="sem-filter" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border, #d1d5db); background: var(--bg-body, #f3f4f6); cursor: pointer;" onchange="applyFilters()">
+            <option value="">All Semesters</option>
+            <option value="1">Semester 1</option>
+            <option value="2">Semester 2</option>
+            <option value="3">Semester 3</option>
+            <option value="4">Semester 4</option>
+            <option value="5">Semester 5</option>
+            <option value="6">Semester 6</option>
+            <option value="7">Semester 7</option>
+            <option value="8">Semester 8</option>
+        </select>
+    </div>
+
+    <div style="display: flex; gap: 8px;">
+        <button type="button" onclick="clearFilters()" style="padding: 10px 16px; background: #e5e7eb; color: #4b5563; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background 0.2s;">Clear</button>
+    </div>
+</div>
+
+<div class="table-container">
+    <table class="marks-table">
+        <thead>
+            <tr>
+                <th>Admin No</th>
+                <th>Name</th>
+                <th>Branch</th>
+                <th>Semester</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="student-table-body">
+            {% for s in students %}
+            <tr data-adm="{{ s.adm_no }}" data-name="{{ s.name }}" data-branch="{{ s.branch_id }}" data-sem="{{ s.sem_number }}" 
+                data-admyear="{{ s.admission_year }}" data-gender="{{ s.gender }}" data-status="{{ s.status }}" 
+                data-form="{{ s.form }}" data-dob="{{ s.dob }}" data-email="{{ s.email_id }}" data-address="{{ s.address }}"
+                data-roll="{{ s.roll_number }}" data-reg="{{ s.reg_number }}"
+                onclick="openModal(this)" style="cursor: pointer;">
+                
+                <td>{{ s.adm_no }}</td>
+                <td style="font-weight: 600;">{{ s.name }}</td>
+                <td>{{ s.branch_id or '-' }}</td>
+                <td>{{ s.sem_number or '-' }}</td>
+                <td>
+                    <span style="padding: 4px 8px; border-radius: 12px; font-size: 12px; background: {% if s.status == 'Active' %}#d1fae5; color: #065f46;{% else %}#fee2e2; color: #991b1b;{% endif %}">
+                        {{ s.status or 'Unknown' }}
+                    </span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="modal-overlay" id="studentModal">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3 style="margin: 0;">Comprehensive Student Details</h3>
+            <button type="button" class="close-btn" onclick="closeModal(event)">✖</button>
+        </div>
+        
+        <form id="updateForm" method="POST" action="/admin/update_student">
+            <div class="form-grid">
+                <div class="form-group"><label>Admin No (Primary Key)</label><input type="text" id="mod_adm_no" name="adm_no" readonly style="background: var(--bg-body);"></div>
+                <div class="form-group"><label>University Reg. Number</label><input type="text" id="mod_reg" name="reg_number"></div>
+                <div class="form-group"><label>Class Roll Number</label><input type="number" id="mod_roll" name="roll_number"></div>
+                <div class="form-group"><label>Admission Year</label><input type="text" id="mod_admyear" name="admission_year"></div>
+                
+                <div class="form-group full-width"><label>Full Name</label><input type="text" id="mod_name" name="name" required></div>
+                <div class="form-group"><label>Email Address</label><input type="email" id="mod_email" name="email_id"></div>
+                <div class="form-group"><label>Date of Birth</label><input type="date" id="mod_dob" name="dob"></div>
+                <div class="form-group"><label>Gender</label><input type="text" id="mod_gender" name="gender"></div>
+                <div class="form-group"><label>Status (e.g., Active)</label><input type="text" id="mod_status" name="status"></div>
+                
+                <div class="form-group"><label>Branch ID</label><input type="text" id="mod_branch" name="branch_id"></div>
+                <div class="form-group"><label>Semester</label><input type="number" id="mod_sem" name="sem_number"></div>
+                <div class="form-group"><label>Form / Quota</label><input type="text" id="mod_form" name="form"></div>
+                
+                <div class="form-group full-width"><label>Address</label><textarea id="mod_address" name="address" rows="2"></textarea></div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" class="action-btn" style="flex: 1; background: #0ca678; border-color: #0ca678;">Save All Updates</button>
+                <button type="button" class="action-btn" style="background: #f03e3e; border-color: #f03e3e;" onclick="confirmDelete()">Delete Record</button>
+            </div>
+        </form>
+
+        <form id="deleteForm" method="POST" action="/admin/delete_student" style="display: none;">
+            <input type="hidden" id="del_adm_no" name="adm_no">
+        </form>
+    </div>
+</div>
+
+<script>
+    // 1. DYNAMIC FILTERING LOGIC
+    function applyFilters() {
+        const searchTxt = document.getElementById('search-input').value.toLowerCase();
+        const branchVal = document.getElementById('branch-filter').value.toLowerCase();
+        const semVal = document.getElementById('sem-filter').value;
+        
+        const rows = document.querySelectorAll('#student-table-body tr');
+        
+        rows.forEach(row => {
+            const searchData = (row.dataset.name + " " + row.dataset.adm + " " + row.dataset.reg + " " + row.dataset.roll).toLowerCase();
+            const branch = (row.dataset.branch || "").toLowerCase();
+            const sem = row.dataset.sem || "";
+
+            const matchesSearch = searchData.includes(searchTxt);
+            const matchesBranch = (branchVal === "" || branch === branchVal);
+            const matchesSem = (semVal === "" || sem === semVal);
+
+            if (matchesSearch && matchesBranch && matchesSem) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    }
+
+    function clearFilters() {
+        document.getElementById('search-input').value = "";
+        document.getElementById('branch-filter').value = "";
+        document.getElementById('sem-filter').value = "";
+        applyFilters(); // Re-run to show all rows
+    }
+
+    // 2. MODAL POPULATION LOGIC 
+    function openModal(row) {
+        document.getElementById('mod_adm_no').value = row.dataset.adm;
+        document.getElementById('mod_reg').value = row.dataset.reg !== "None" ? row.dataset.reg : "";
+        document.getElementById('mod_roll').value = row.dataset.roll !== "None" ? row.dataset.roll : "";
+        document.getElementById('mod_admyear').value = row.dataset.admyear !== "None" ? row.dataset.admyear : "";
+        document.getElementById('mod_name').value = row.dataset.name;
+        document.getElementById('mod_email').value = row.dataset.email !== "None" ? row.dataset.email : "";
+        document.getElementById('mod_dob').value = row.dataset.dob !== "None" ? row.dataset.dob : "";
+        document.getElementById('mod_gender').value = row.dataset.gender !== "None" ? row.dataset.gender : "";
+        document.getElementById('mod_status').value = row.dataset.status !== "None" ? row.dataset.status : "";
+        document.getElementById('mod_branch').value = row.dataset.branch !== "None" ? row.dataset.branch : "";
+        document.getElementById('mod_sem').value = row.dataset.sem !== "None" ? row.dataset.sem : "";
+        document.getElementById('mod_form').value = row.dataset.form !== "None" ? row.dataset.form : "";
+        document.getElementById('mod_address').value = row.dataset.address !== "None" ? row.dataset.address : "";
+        
+        document.getElementById('del_adm_no').value = row.dataset.adm;
+        document.getElementById('studentModal').style.display = 'flex';
+    }
+
+    function closeModal(event) { 
+        if(event) event.preventDefault(); 
+        document.getElementById('studentModal').style.display = 'none'; 
+    }
+
+    function confirmDelete() {
+        if (confirm(`WARNING: Delete ${document.getElementById('mod_name').value}? This cannot be undone.`)) {
+            document.getElementById('deleteForm').submit();
+        }
+    }
+
+    window.onclick = function(event) {
+        if (event.target == document.getElementById('studentModal')) { 
+            closeModal(event); 
+        }
+    }
+</script>
+{% endblock %}

@@ -12,17 +12,17 @@
     <span class="nav-icon">🏠</span>
     <span>Dashboard</span>
 </a>
-<a href="/admin/add_student" class="nav-link active">
-    <span class="nav-icon">👤</span>
-    <span>Add Student</span>
+<a href="/admin/students" class="nav-link active">
+    <span class="nav-icon">👨‍🎓</span>
+    <span>Manage Students</span>
 </a>
-<a href="/admin/add_professor" class="nav-link">
+<a href="/admin/professors" class="nav-link">
     <span class="nav-icon">👨‍🏫</span>
-    <span>Add Professor</span>
+    <span>Manage Professors</span>
 </a>
-<a href="/admin/map_subject" class="nav-link">
+<a href="/admin/subjects" class="nav-link">
     <span class="nav-icon">🗺️</span>
-    <span>Map Subject</span>
+    <span>Manage Subjects</span>
 </a>
 <a href="/admin/logout" class="nav-link nav-link-danger">
     <span class="nav-icon">🚪</span>
@@ -39,40 +39,36 @@
     </div>
 
     {% if error %}
-    <div class="form-alert form-alert-error">{{ error }}</div>
+    <div class="form-alert form-alert-error" style="background: #fee2e2; color: #991b1b; padding: 15px; border-radius: 8px; margin-bottom: 20px;">{{ error }}</div>
     {% endif %}
     {% if success %}
-    <div class="form-alert form-alert-success">{{ success }}</div>
+    <div class="form-alert form-alert-success" style="background: #d1fae5; color: #0ca678; padding: 15px; border-radius: 8px; margin-bottom: 20px;">{{ success }}</div>
     {% endif %}
 
-    <form method="POST" class="admin-form">
+    <form method="POST" action="/admin/add_student" class="admin-form">
 
-        <!-- SECTION 1: student_details -->
         <div class="form-section">
-            <div class="form-section-title">Student Details</div>
-            <div class="form-grid">
+            <div class="form-section-title" style="margin-bottom: 15px; font-weight: bold; border-bottom: 1px solid var(--border); padding-bottom: 5px;">Student Details</div>
+            <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
 
                 <div class="form-group">
-                    <label>Admission Number</label>
-                    <input type="text" name="adm_no"
-                           placeholder="e.g. ADM2024001" required>
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Admission Number</label>
+                    <input type="text" name="adm_no" placeholder="e.g. ADM2024001" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); box-sizing: border-box;">
                 </div>
 
                 <div class="form-group">
-                    <label>Admission Year</label>
-                    <input type="text" name="admission_year"
-                           placeholder="e.g. 2024" required>
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Admission Year</label>
+                    <input type="text" name="admission_year" placeholder="e.g. 2024" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); box-sizing: border-box;">
                 </div>
 
                 <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" name="name"
-                           placeholder="Full name" required>
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Full Name</label>
+                    <input type="text" name="name" placeholder="Full name" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); box-sizing: border-box;">
                 </div>
 
                 <div class="form-group">
-                    <label>Gender</label>
-                    <select name="gender">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Gender</label>
+                    <select name="gender" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); box-sizing: border-box;">
                         <option value="">-- Select --</option>
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
@@ -81,71 +77,67 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Date of Birth</label>
-                    <input type="date" name="dob" required>
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Date of Birth</label>
+                    <input type="date" name="dob" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); box-sizing: border-box;">
                 </div>
 
                 <div class="form-group">
-                    <label>Email ID</label>
-                    <input type="email" name="email_id"
-                           placeholder="student@email.com">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Email ID</label>
+                    <input type="email" name="email_id" placeholder="student@email.com" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); box-sizing: border-box;">
                 </div>
 
                 <div class="form-group">
-                    <label>Status</label>
-                    <select name="status">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Status</label>
+                    <select name="status" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); box-sizing: border-box;">
                         <option value="Active">Active</option>
                         <option value="Inactive">Inactive</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label>Form</label>
-                    <input type="text" name="form"
-                           placeholder="e.g. Regular">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Form</label>
+                    <input type="text" name="form" placeholder="e.g. Regular" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); box-sizing: border-box;">
                 </div>
 
-                <div class="form-group form-group-full">
-                    <label>Address</label>
-                    <textarea name="address" rows="3"
-                              placeholder="Full address"></textarea>
-                </div>
-
-            </div>
-        </div>
-
-        <!-- SECTION 2: student_class -->
-        <div class="form-section">
-            <div class="form-section-title">Enrollment Details</div>
-            <div class="form-grid">
-
-                <div class="form-group">
-                    <label>Branch</label>
-                    <input type="text" name="branch_id"
-                           placeholder="e.g. CSE" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Semester</label>
-                    <input type="number" name="sem_number"
-                           min="1" max="8"
-                           placeholder="1 to 8" required>
-                </div>
-
-               
-
-                <div class="form-group">
-                    <label>Register Number</label>
-                    <input type="text" name="reg_number"
-                           placeholder="e.g. REG2024001">
+                <div class="form-group form-group-full" style="grid-column: 1 / -1;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Address</label>
+                    <textarea name="address" rows="3" placeholder="Full address" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); box-sizing: border-box;"></textarea>
                 </div>
 
             </div>
         </div>
 
-        <div class="form-actions">
-            <a href="/admin/dashboard" class="btn-secondary">Cancel</a>
-            <button type="submit" class="btn-primary">Add Student</button>
+        <div class="form-section" style="margin-top: 30px;">
+            <div class="form-section-title" style="margin-bottom: 15px; font-weight: bold; border-bottom: 1px solid var(--border); padding-bottom: 5px;">Enrollment Details</div>
+            <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Branch</label>
+                    <input type="text" name="branch_id" placeholder="e.g. CSE" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); box-sizing: border-box;">
+                </div>
+
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Semester</label>
+                    <input type="number" name="sem_number" min="1" max="8" placeholder="1 to 8" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); box-sizing: border-box;">
+                </div>
+
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Class Roll Number</label>
+                    <input type="number" name="roll_number" placeholder="e.g. 42" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); box-sizing: border-box;">
+                </div>
+
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">University Register Number</label>
+                    <input type="text" name="reg_number" placeholder="e.g. REG2024001" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); box-sizing: border-box;">
+                </div>
+
+            </div>
+        </div>
+
+        <div class="form-actions" style="margin-top: 30px; display: flex; gap: 15px;">
+            <a href="/admin/students" class="btn-secondary" style="flex: 1; text-align: center; padding: 14px; border-radius: 6px; text-decoration: none; color: var(--text-primary); border: 1px solid var(--border); background: var(--bg-body); font-weight: bold; font-size: 16px;">Cancel</a>
+            
+            <button type="submit" class="btn-primary" style="flex: 2; padding: 14px; border-radius: 6px; background: var(--primary-color, #3b5bdb); color: white; border: none; font-weight: bold; font-size: 16px; cursor: pointer;">Add Student</button>
         </div>
 
     </form>
