@@ -23,21 +23,34 @@
     <button class="action-btn" onclick="window.location.href='/admin/add_student'">+ Add Student</button>
 </div>
 
-<div class="card" style="margin-bottom: 20px; display: flex; gap: 15px; padding: 15px;">
-    <input type="text" id="search-input" placeholder="Search by Name, Roll No, Reg No..." style="flex: 1; padding: 8px; border-radius: 6px; border: 1px solid var(--border);" onkeyup="applyFilters()">
-    <select id="branch-filter" style="padding: 8px; border-radius: 6px; border: 1px solid var(--border);" onchange="applyFilters()">
+<div class="card" style="margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 15px; padding: 15px; align-items: center;">
+    
+    <input type="text" id="search-input" placeholder="Search by Name, Roll No, Reg No..." 
+           style="flex: 1; min-width: 250px; padding: 10px; border-radius: 6px; border: 1px solid var(--border);">
+    
+    <select id="branch-filter" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); min-width: 150px;">
         <option value="">All Branches</option>
         <option value="CSE">CSE</option>
         <option value="ECE">ECE</option>
-        <option value="MECH">MECH</option>
+        <option value="ME">ME</option>
+        <option value="EEE">EEE</option>
+        <option value="CE">CE</option>
     </select>
-    <select id="sem-filter" style="padding: 8px; border-radius: 6px; border: 1px solid var(--border);" onchange="applyFilters()">
+    
+    <select id="sem-filter" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); min-width: 150px;">
         <option value="">All Semesters</option>
         <option value="1">Semester 1</option>
         <option value="2">Semester 2</option>
         <option value="3">Semester 3</option>
         <option value="4">Semester 4</option>
+        <option value="5">Semester 5</option>
+        <option value="6">Semester 6</option>
+        <option value="7">Semester 7</option>
+        <option value="8">Semester 8</option>
     </select>
+    
+    <button type="button" class="action-btn" onclick="applyFilters()" style="padding: 10px 20px;">Filter</button>
+    <button type="button" class="action-btn" onclick="clearFilters()" style="padding: 10px 20px; background: var(--text-secondary); border-color: var(--text-secondary);">Clear</button>
 </div>
 
 <div class="table-container">
