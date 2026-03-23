@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% block title %}Manage Assignments{% endblock %}
+{% block topbar_title %}Manage Subject Assignments{% endblock %}
+
+{% block topbar_right %}
+<span class="topbar-welcome">Administrator</span>
+<div class="avatar" style="background:#f03e3e;">A</div>
+{% endblock %}
+
+{% block sidebar %}
+<a href="/admin/dashboard" class="nav-link">
+    <span class="nav-icon">🏠</span><span>Dashboard</span>
+</a>
+<a href="/admin/students" class="nav-link">
+    <span class="nav-icon">👨‍🎓</span><span>Manage Students</span>
+</a>
+<a href="/admin/professors" class="nav-link">
+    <span class="nav-icon">👨‍🏫</span><span>Manage Professors</span>
+</a>
+<a href="/admin/subjects" class="nav-link active">
+    <span class="nav-icon">📚</span><span>Manage Subjects</span>
+</a>
+<a href="/admin/logout" class="nav-link nav-link-danger">
+    <span class="nav-icon">🚪</span><span>Logout</span>
+</a>
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-section-title" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <span style="font-size:22px; font-weight:bold;">Subject Assignments</span>
+    <button class="action-btn"
+            onclick="window.location.href='/admin/map_subject'"
+            style="padding:12px 24px; font-size:15px; font-weight:bold; border-radius:8px;">
+        + New Assignment
+    </button>
+</div>
+
+{% if success %}
+<div class="form-alert form-alert-success" style="margin-bottom:16px;">{{ success }}</div>
+{% endif %}
+{% if error %}
+<div class="form-alert form-alert-error" style="margin-bottom:16px;">{{ error }}</div>
+{% endif %}
+
+<!-- Search bar -->
+<div style="background:var(--bg-card); padding:12px 16px; border-radius:10px;
+            margin-bottom:20px; border:1px solid var(--border);
+            display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+    <div style="flex:2; min-width:220px;">
+        <input type="text" id="search-input"
+               placeholder="Search by professor, subject, branch..."
+               style="width:100%; padding:10px 14px; border-radius:6px;
+                      border:1px solid var(--border); background:var(--bg-input);
+                      color:var(--text-primary); box-sizing:border-box;"
+               oninput="applyFilters()">
+    </div>
+    <div style="flex:1; min-width:140px;">
+        <select id="branch-filter"
+                style="width:100%; padding:10px; border-radius:6px;
+                       border:1px solid var(--border); background:var(--bg-input);
+                       color:var(--text-primary); cursor:pointer;"
+                onchange="applyFilters()">
+            <option value="">All Branches</option>
+            <option value="CSE">CSE</option>
+            <option value="ECE">ECE</option>
+            <option value="EEE">EEE</option>
+            <option value="ME">ME</option>
+            <option value="CE">CE</option>
+        </select>
+    </div>
+    <div style="flex:1; min-width:140px;">
+        <select id="sem-filter"
+                style="width:100%; padding:10px; border-radius:6px;
+                       border:1px solid var(--border); background:var(--bg-input);
+                       color:var(--text-primary); cursor:pointer;"
+                onchange="applyFilters()">
+            <option value="">All Semesters</option>
+            {% for i in range(1, 9) %}
+            <option value="{{ i }}">Semester {{ i }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <button onclick="clearFilters()"
+            style="padding:10px 16px; background:#e5e7eb; color:#4b5563;
+                   border:none; border-radius:6px; font-weight:600; cursor:pointer;">
+        Clear
+    </button>
+</div>
+
+<!-- Table -->
+<div class="table-container">
+    <table class="marks-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Professor</th>
+                <th>Subject</th>
+                <th>Branch</th>
+                <th>Semester</th>
+                <th>Academic Year</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="assignment-table-body">
+            {% for a in assignments %}
+            <tr data-tid="{{ a.t_id }}"
+                data-professor="{{ a.professor_name }}"
+                data-subject="{{ a.subject_name }}"
+                data-branch="{{ a.branch_id }}"
+                data-sem="{{ a.sem_number }}">
+
+                <td style="color:var(--accent); font-weight:700;">{{ a.t_id }}</td>
+                <td style="font-weight:600;">{{ a.professor_name }}</td>
+                <td>
+                    {{ a.subject_name }}
+                   
+                </td>
+                <td>{{ a.branch_id }}</td>
+                <td>Sem {{ a.sem_number }}</td>
+                <td>{{ a.academic_year or '-' }}</td>
+                <td>
+                    <button class="action-btn"
+                            style="background:#f03e3e; font-size:12px; padding:6px 14px;"
+                            onclick="confirmDelete('{{ a.t_id }}', '{{ a.subject_name }}', '{{ a.professor_name }}')">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Hidden delete form -->
+<form id="deleteForm" method="POST" action="/admin/delete_assignment" style="display:none;">
+    <input type="hidden" id="del_tid" name="t_id">
+</form>
+
+<script>
+function applyFilters() {
+    const search = document.getElementById('search-input').value.toLowerCase();
+    const branch = document.getElementById('branch-filter').value.toLowerCase();
+    const sem    = document.getElementById('sem-filter').value;
+
+    document.querySelectorAll('#assignment-table-body tr').forEach(row => {
+        const text       = (row.dataset.professor + ' ' + row.dataset.subject).toLowerCase();
+        const rowBranch  = (row.dataset.branch || '').toLowerCase();
+        const rowSem     = row.dataset.sem || '';
+
+        const matchSearch = text.includes(search);
+        const matchBranch = branch === '' || rowBranch === branch;
+        const matchSem    = sem === '' || rowSem === sem;
+
+        row.style.display = (matchSearch && matchBranch && matchSem) ? '' : 'none';
+    });
+}
+
+function clearFilters() {
+    document.getElementById('search-input').value  = '';
+    document.getElementById('branch-filter').value = '';
+    document.getElementById('sem-filter').value    = '';
+    applyFilters();
+}
+
+function confirmDelete(tid, subject, professor) {
+    if (confirm(`WARNING: Delete assignment #${tid}?\n\nSubject: ${subject}\nProfessor: ${professor}\n\nThis will remove all component_marks and total_marks for students in this assignment.`)) {
+        document.getElementById('del_tid').value = tid;
+        document.getElementById('deleteForm').submit();
+    }
+}
+</script>
+
+{% endblock %}

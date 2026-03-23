@@ -7,26 +7,22 @@
 <div class="avatar" style="background:#f03e3e;">A</div>
 {% endblock %}
 
+
 {% block sidebar %}
 <a href="/admin/dashboard" class="nav-link">
-    <span class="nav-icon">🏠</span>
-    <span>Dashboard</span>
+    <span class="nav-icon">🏠</span><span>Dashboard</span>
 </a>
-<a href="/admin/add_student" class="nav-link">
-    <span class="nav-icon">👤</span>
-    <span>Add Student</span>
+<a href="/admin/students" class="nav-link">
+    <span class="nav-icon">👨‍🎓</span><span>Manage Students</span>
 </a>
-<a href="/admin/add_professor" class="nav-link active">
-    <span class="nav-icon">👨‍🏫</span>
-    <span>Add Professor</span>
+<a href="/admin/professors" class="nav-link active">
+    <span class="nav-icon">👨‍🏫</span><span>Manage Professors</span>
 </a>
-<a href="/admin/map_subject" class="nav-link">
-    <span class="nav-icon">🗺️</span>
-    <span>Map Subject</span>
+<a href="/admin/subjects" class="nav-link">
+    <span class="nav-icon">🗺️</span><span>Manage Subjects</span>
 </a>
 <a href="/admin/logout" class="nav-link nav-link-danger">
-    <span class="nav-icon">🚪</span>
-    <span>Logout</span>
+    <span class="nav-icon">🚪</span><span>Logout</span>
 </a>
 {% endblock %}
 
@@ -99,7 +95,7 @@
         </div>
 
         <div class="form-actions">
-            <a href="/admin/dashboard" class="btn-secondary">Cancel</a>
+            <a href="/admin/professors" class="btn-secondary">Cancel</a>
             <button type="submit" class="btn-primary">Add Professor</button>
         </div>
 

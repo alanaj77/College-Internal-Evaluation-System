@@ -328,3 +328,182 @@ def delete_student():
     return redirect('/admin/students')
 
 
+@admin.route('/admin/subjects')
+def subjects():
+    if session.get('role') != 'admin':
+        return redirect(url_for('admin.login'))
+    return render_template('admin/subjects.html')
+
+
+@admin.route('/admin/add_subject', methods=['GET', 'POST'])
+def add_subject():
+    if session.get('role') != 'admin':
+        return redirect(url_for('admin.login'))
+
+    error   = None
+    success = None
+
+    if request.method == 'POST':
+        subject_code = request.form.get('subject_code')
+        subject_name = request.form.get('subject_name')
+
+        conn   = get_connection()
+        cursor = conn.cursor()
+        try:
+            cursor.execute(
+                "INSERT INTO subject (subject_code, subject_name) VALUES (%s, %s)",
+                (subject_code, subject_name)
+            )
+            conn.commit()
+            success = f"Subject {subject_name} ({subject_code}) added successfully."
+        except Error as e:
+            conn.rollback()
+            error = f"Error: {e}"
+        finally:
+            cursor.close()
+            conn.close()
+
+    return render_template('admin/add_subject.html', error=error, success=success)
+
+
+
+@admin.route('/admin/professors')
+def manage_professors():
+    if session.get('role') != 'admin':
+        return redirect(url_for('admin.login'))
+
+    conn   = get_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute("SELECT * FROM professor ORDER BY name")
+        professors = cursor.fetchall()
+        return render_template('admin/manage_professors.html',
+                               professors=professors)
+    except Error as e:
+        return f"Error: {e}", 500
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@admin.route('/admin/update_professor', methods=['POST'])
+def update_professor():
+    if session.get('role') != 'admin':
+        return redirect(url_for('admin.login'))
+
+    p_id        = request.form.get('p_id')
+    name        = request.form.get('name')
+    email       = request.form.get('email')
+    phone       = request.form.get('phone')
+    designation = request.form.get('designation')
+    status      = request.form.get('status')
+    password    = request.form.get('password')
+
+    conn   = get_connection()
+    cursor = conn.cursor()
+    try:
+        if password:
+            # Update with new password
+            from werkzeug.security import generate_password_hash
+            password_hash = generate_password_hash(password)
+            cursor.execute("""
+                UPDATE professor
+                SET name=%s, email=%s, phone=%s,
+                    designation=%s, status=%s, password_hash=%s
+                WHERE p_id=%s
+            """, (name, email, phone, designation,
+                  status, password_hash, p_id))
+        else:
+            # Update without changing password
+            cursor.execute("""
+                UPDATE professor
+                SET name=%s, email=%s, phone=%s,
+                    designation=%s, status=%s
+                WHERE p_id=%s
+            """, (name, email, phone, designation, status, p_id))
+
+        conn.commit()
+        return redirect(url_for('admin.manage_professors'))
+    except Error as e:
+        return f"Error: {e}", 500
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@admin.route('/admin/delete_professor', methods=['POST'])
+def delete_professor():
+    if session.get('role') != 'admin':
+        return redirect(url_for('admin.login'))
+
+    p_id = request.form.get('p_id')
+
+    conn   = get_connection()
+    cursor = conn.cursor()
+    try:
+        # before_delete_professor trigger handles t_assignment cascade
+        cursor.execute("DELETE FROM professor WHERE p_id = %s", (p_id,))
+        conn.commit()
+        return redirect(url_for('admin.manage_professors'))
+    except Error as e:
+        return f"Error: {e}", 500
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@admin.route('/admin/assignments')
+def manage_assignments():
+    if session.get('role') != 'admin':
+        return redirect(url_for('admin.login'))
+
+    conn   = get_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute("""
+            SELECT
+                ta.t_id,
+                ta.branch_id,
+                ta.sem_number,
+                ta.academic_year,
+                p.name  AS professor_name,
+                s.subject_code,
+                s.subject_name
+            FROM t_assignment ta
+            JOIN professor p ON ta.p_id = p.p_id
+            JOIN subject s   ON ta.subject_code = s.subject_code
+            ORDER BY ta.t_id DESC
+        """)
+        assignments = cursor.fetchall()
+        return render_template('admin/manage_assignments.html',
+                               assignments=assignments)
+    except Error as e:
+        return f"Error: {e}", 500
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@admin.route('/admin/delete_assignment', methods=['POST'])
+def delete_assignment():
+    if session.get('role') != 'admin':
+        return redirect(url_for('admin.login'))
+
+    t_id = request.form.get('t_id')
+
+    conn   = get_connection()
+    cursor = conn.cursor()
+    try:
+        # after_delete_t_assignment trigger handles
+        # component_marks and total_marks cascade
+        cursor.execute(
+            "DELETE FROM t_assignment WHERE t_id = %s", (t_id,)
+        )
+        conn.commit()
+        return redirect(url_for('admin.manage_assignments'))
+    except Error as e:
+        return f"Error: {e}", 500
+    finally:
+        cursor.close()
+        conn.close()
+        
