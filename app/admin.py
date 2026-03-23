@@ -450,3 +450,60 @@ def delete_professor():
     finally:
         cursor.close()
         conn.close()
+
+
+@admin.route('/admin/assignments')
+def manage_assignments():
+    if session.get('role') != 'admin':
+        return redirect(url_for('admin.login'))
+
+    conn   = get_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute("""
+            SELECT
+                ta.t_id,
+                ta.branch_id,
+                ta.sem_number,
+                ta.academic_year,
+                p.name  AS professor_name,
+                s.subject_code,
+                s.subject_name
+            FROM t_assignment ta
+            JOIN professor p ON ta.p_id = p.p_id
+            JOIN subject s   ON ta.subject_code = s.subject_code
+            ORDER BY ta.t_id DESC
+        """)
+        assignments = cursor.fetchall()
+        return render_template('admin/manage_assignments.html',
+                               assignments=assignments)
+    except Error as e:
+        return f"Error: {e}", 500
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@admin.route('/admin/delete_assignment', methods=['POST'])
+def delete_assignment():
+    if session.get('role') != 'admin':
+        return redirect(url_for('admin.login'))
+
+    t_id = request.form.get('t_id')
+
+    conn   = get_connection()
+    cursor = conn.cursor()
+    try:
+        # after_delete_t_assignment trigger handles
+        # component_marks and total_marks cascade
+        cursor.execute(
+            "DELETE FROM t_assignment WHERE t_id = %s", (t_id,)
+        )
+        conn.commit()
+        return redirect(url_for('admin.manage_assignments'))
+    except Error as e:
+        return f"Error: {e}", 500
+    finally:
+        cursor.close()
+        conn.close()
+        
